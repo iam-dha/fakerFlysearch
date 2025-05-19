@@ -8,7 +8,6 @@ const mailer = require("../../services/mailer.service");
 const User = require("../../models/user.model");
 const Session = require("../../models/session.model");
 const Role = require("../../models/role.model");
-const Folder = require("../../models/folder.model");
 const UserInformation = require("../../models/userInformation.model");
 const PasswordResetToken = require("../../models/passwordResetToken.model");
 // Helpers
