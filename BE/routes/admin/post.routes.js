@@ -1,0 +1,56 @@
+const express = require("express");
+const multer = require("multer");
+//Controllers
+const controller = require("../../controllers/admin/post.controller");
+//Middlewares
+const authMiddleWare = require("../../middlewares/authenticate.middleware");
+const validateMiddleWare = require("../../middlewares/validate.middleware");
+//Schemas
+const {postSchema} = require("../../schemas/admin/post.schema");
+
+const fileUpload = multer();
+const uploadCloud = require("../../middlewares/uploadCloud.middleware");
+
+const router = express.Router();
+router.get(
+    "/",
+    authMiddleWare.checkAccessToken("Admin"),
+    authMiddleWare.checkPermission(["read_post"]),
+    controller.getAllPosts
+);
+
+router.get(
+    "/:post_id",
+    authMiddleWare.checkAccessToken("Admin"),
+    authMiddleWare.checkPermission(["read_post"]),
+    controller.getPost
+);
+
+router.post(
+    "/",
+    authMiddleWare.checkAccessToken("Admin"),
+    authMiddleWare.checkPermission(["create_post"]),
+    fileUpload.single("thumbnail"),
+    uploadCloud.upload,
+    validateMiddleWare.validateInput(postSchema),
+    controller.createPost
+);
+
+router.patch(
+    "/:post_id",
+    authMiddleWare.checkAccessToken("Admin"),
+    authMiddleWare.checkPermission(["update_post"]),
+    fileUpload.single("thumbnail"),
+    uploadCloud.upload,
+    validateMiddleWare.validateInput(postSchema),
+    controller.updatePost
+);
+
+router.delete(
+    "/:post_id",
+    authMiddleWare.checkAccessToken("Admin"),
+    authMiddleWare.checkPermission(["delete_post"]),
+    controller.deletePost
+);
+
+module.exports = router;
