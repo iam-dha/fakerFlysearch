@@ -37,7 +37,7 @@ router.post(
 );
 
 router.patch(
-    "/:post_id",
+    "/:slug",
     authMiddleWare.checkAccessToken("Admin"),
     authMiddleWare.checkPermission(["UPDATE_POST"]),
     fileUpload.single("thumbnail"),
@@ -47,7 +47,7 @@ router.patch(
 );
 
 router.delete(
-    "/:post_id",
+    "/:slug",
     authMiddleWare.checkAccessToken("Admin"),
     authMiddleWare.checkPermission(["DELETE_POST"]),
     controller.deletePost
