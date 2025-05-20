@@ -23,8 +23,14 @@ module.exports.getAllPosts = async (req, res) => {
             deleted: false,
         });
         return res.status(200).json({
-            results: postsCount,
-            data: posts,
+            message: "Get posts successfully",
+            data: {
+                totalCount: postsCount,
+                currentPage: page,
+                totalPages: Math.ceil(postsCount / limit),
+                posts: posts,
+            }
+            
         });
     } catch (error) {
         console.error(`[GET /api/v1/admin/posts] Error:`, error);
