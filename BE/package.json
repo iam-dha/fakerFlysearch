@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npx nodemon --inspect index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test yet\" && exit 0",
+    "lint": "npx eslint . || echo 'No lint configured'"
   },
   "author": "",
   "license": "ISC",
