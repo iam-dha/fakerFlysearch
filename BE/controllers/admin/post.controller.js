@@ -16,6 +16,7 @@ module.exports.getAllPosts = async (req, res) => {
             deleted: false,
         })
             .limit(limit)
+            .select("-__v")
             .skip(skip)
             .sort({ [sortFilter]: sortOrder });
         const postsCount = await Post.countDocuments({
@@ -31,14 +32,14 @@ module.exports.getAllPosts = async (req, res) => {
     }
 };
 
-// [GET] /api/v1/admin/posts/:post_id
+// [GET] /api/v1/admin/posts/:slug
 module.exports.getPost = async (req, res) => {
-    const { post_id } = req.params;
+    const { slug } = req.params;
     try {
-        const post = Post.findOne({
-            post_id: post_id,
+        const post = await Post.findOne({
+            slug: slug,
             deleted: false,
-        });
+        }).select("-__v");
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
@@ -47,7 +48,7 @@ module.exports.getPost = async (req, res) => {
             data: post,
         });
     } catch (error) {
-        console.error(`[GET /api/v1/admin/posts/${post_id}] Error:`, error);
+        console.error(`[GET /api/v1/admin/posts/${slug}] Error:`, error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -56,6 +57,15 @@ module.exports.getPost = async (req, res) => {
 module.exports.createPost = async (req, res) => {
     const { title, description, content, thumbnail = "" } = req.body;
     try {
+        const isExistingPost = await Post.findOne({
+            title: title,
+            deleted: false
+        });
+        if (isExistingPost) {
+            return res.status(400).json({
+                message: "Post with this title already exists",
+            });
+        }
         const newPost = new Post({
             title,
             description,

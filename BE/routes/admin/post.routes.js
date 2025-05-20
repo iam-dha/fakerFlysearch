@@ -15,21 +15,21 @@ const router = express.Router();
 router.get(
     "/",
     authMiddleWare.checkAccessToken("Admin"),
-    authMiddleWare.checkPermission(["read_post"]),
+    authMiddleWare.checkPermission(["READ_POST"]),
     controller.getAllPosts
 );
 
 router.get(
-    "/:post_id",
+    "/:slug",
     authMiddleWare.checkAccessToken("Admin"),
-    authMiddleWare.checkPermission(["read_post"]),
+    authMiddleWare.checkPermission(["READ_POST"]),
     controller.getPost
 );
 
 router.post(
     "/",
     authMiddleWare.checkAccessToken("Admin"),
-    authMiddleWare.checkPermission(["create_post"]),
+    authMiddleWare.checkPermission(["CREATE_POST"]),
     fileUpload.single("thumbnail"),
     uploadCloud.upload,
     validateMiddleWare.validateInput(postSchema),
@@ -39,7 +39,7 @@ router.post(
 router.patch(
     "/:post_id",
     authMiddleWare.checkAccessToken("Admin"),
-    authMiddleWare.checkPermission(["update_post"]),
+    authMiddleWare.checkPermission(["UPDATE_POST"]),
     fileUpload.single("thumbnail"),
     uploadCloud.upload,
     validateMiddleWare.validateInput(postSchema),
@@ -49,7 +49,7 @@ router.patch(
 router.delete(
     "/:post_id",
     authMiddleWare.checkAccessToken("Admin"),
-    authMiddleWare.checkPermission(["delete_post"]),
+    authMiddleWare.checkPermission(["DELETE_POST"]),
     controller.deletePost
 );
 
