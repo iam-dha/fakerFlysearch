@@ -1,5 +1,7 @@
 const BusRoute = require("../../models/busCompany.model");
 const Booking = require("../../models/booking.model");
+const mailer = require("../../services/mailer.service");
+const User = require("../../models/user.model");
 
 exports.getAvailableCars = async (req, res) => {
   const { iata } = req.query;
@@ -45,6 +47,12 @@ exports.bookCar = async (req, res) => {
     });
 
     await booking.save();
+
+    const user = await User.findById(userId);
+    if (user?.email) {
+      await mailer.sendCarBookingConfirmation(user.email, booking, route);
+    }
+
     return res.status(201).json({ message: "Car booked successfully", data: booking });
   } catch (err) {
     console.error("[POST /car-bookings] Error:", err);

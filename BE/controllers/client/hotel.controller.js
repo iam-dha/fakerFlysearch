@@ -1,6 +1,8 @@
 const Room = require("../../models/room.model");
 const Hotel = require("../../models/hotel.model");
 const HotelBooking = require("../../models/hotelBooking.model");
+const User = require("../../models/user.model");
+const mailer = require("../../services/mailer.service");
 
 exports.bookMultipleRooms = async (req, res) => {
   const { userId, hotelId, rooms, check_in, check_out } = req.body;
@@ -44,6 +46,11 @@ exports.bookMultipleRooms = async (req, res) => {
     });
 
     await booking.save();
+
+    const user = await User.findById(userId);
+    if (user?.email) {
+      await mailer.sendHotelBookingConfirmation(user.email, booking, hotel);
+    }
 
     return res.status(201).json({ message: "Booking successful", data: booking });
   } catch (err) {
