@@ -37,7 +37,7 @@ const promotion_schema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         enum: ["active", "inactive"],
-        default: true,
+        default: "active",
     },
     deleted: {
         type: Boolean,

@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const systemConfig = require("./config/system.js");
 require("dotenv").config();
+const cron = require("node-cron");
+const releaseExpiredBookings = require("./helpers/bookingTimeout.helper");
 
 //Add route
 const clientRoute = require("./routes/client/index.routes");
@@ -61,3 +63,8 @@ app.use(`${systemConfig.apiPath}/v1/admin/bookings`, adminBookingRoutes);
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
   })
+
+// Chạy mỗi 10 phút
+  cron.schedule("*/10 * * * *", () => {
+  releaseExpiredBookings();
+});
