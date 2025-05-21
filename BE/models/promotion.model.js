@@ -18,11 +18,11 @@ const promotion_schema = new mongoose.Schema({
         type: String,
         default: "",
     },
-    start_date: {
+    startDate: {
         type: Date,
         default: Date.now,
     },
-    end_date: {
+    endDate: {
         type: Date,
         default: Date.now + 7 * 24 * 60 * 60 * 1000,
     },
@@ -47,7 +47,7 @@ const promotion_schema = new mongoose.Schema({
         type: Date,
         default: null,
     },
-    discount_value: {
+    discountValue: {
         type: Number,
         default: 0,
     },

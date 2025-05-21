@@ -7,7 +7,7 @@ module.exports.getAllPosts = async (req, res) => {
     const limit =
         parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
     const { filter = "createdAt", order = "asc" } = req.query;
-    const sortFields = ["createdAt", "updatedAt", "deleted"];
+    const sortFields = ["createdAt", "updatedAt"];
     const sortFilter = sortFields.includes(filter) ? filter : "createdAt";
     const sortOrder = order === "asc" ? 1 : -1;
     const skip = (page - 1) * limit;
@@ -15,9 +15,9 @@ module.exports.getAllPosts = async (req, res) => {
         const posts = await Post.find({
             deleted: false,
         })
+            .skip(skip)
             .limit(limit)
             .select("-__v")
-            .skip(skip)
             .sort({ [sortFilter]: sortOrder });
         const postsCount = await Post.countDocuments({
             deleted: false,
@@ -29,8 +29,7 @@ module.exports.getAllPosts = async (req, res) => {
                 currentPage: page,
                 totalPages: Math.ceil(postsCount / limit),
                 posts: posts,
-            }
-            
+            },
         });
     } catch (error) {
         console.error(`[GET /api/v1/admin/posts] Error:`, error);
@@ -65,7 +64,7 @@ module.exports.createPost = async (req, res) => {
     try {
         const isExistingPost = await Post.findOne({
             title: title,
-            deleted: false
+            deleted: false,
         });
         if (isExistingPost) {
             return res.status(400).json({
@@ -97,8 +96,8 @@ module.exports.updatePost = async (req, res) => {
     const { slug } = req.params;
     const {
         title = "",
-        description ,
-        content ,
+        description,
+        content,
         thumbnail = "",
         active = "active",
     } = req.body;
@@ -145,7 +144,7 @@ module.exports.updatePost = async (req, res) => {
 
 // [DELETE] /api/v1/admin/posts/:slug
 module.exports.deletePost = async (req, res) => {
-    const {slug} = req.params;
+    const { slug } = req.params;
     try {
         const post = await Post.findOne({
             slug: slug,
@@ -164,4 +163,4 @@ module.exports.deletePost = async (req, res) => {
         console.error(`[DELETE /api/v1/admin/posts/${slug}] Error:`, error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
