@@ -29,7 +29,7 @@ module.exports.getAllUserInfo = async (req, res) => {
         const users = await UserInformation.find()
             .skip(skip)
             .limit(limit)
-            .select("email fullName userId deleted status")
+            .select("email fullName userId deleted status -_id")
             .sort({ [sortFilter]: sortOrder });
         return res.status(200).json({
             message: "Get all user information successfully",
