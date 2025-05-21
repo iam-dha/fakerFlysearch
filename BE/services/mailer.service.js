@@ -62,6 +62,34 @@ const sendEmailForgotPassword = async (to, resetUrl) => {
     await transporter.sendMail(mailOptions);
 };
 
+const sendBookingConfirmation = async (to, booking) => {
+    const flight = booking.flight;
+    const mailOptions = {
+        from: `"FlySearchApp Support" <${process.env.MAIL_USER}>`,
+        to,
+        subject: "✈️ Booking Confirmation - FlySearchApp",
+        html: `
+          <h2>🛫 Booking Confirmed!</h2>
+          <p>Thank you for booking your flight with FlySearchApp.</p>
+          <ul>
+            <li><strong>Route:</strong> ${flight.iata_from} → ${flight.iata_to}</li>
+            <li><strong>Date:</strong> ${new Date(flight.departure_date).toLocaleDateString()}</li>
+            <li><strong>Time:</strong> ${flight.departure_time}</li>
+            <li><strong>Seat class:</strong> ${booking.seat_class}</li>
+            <li><strong>Passenger:</strong> ${booking.passenger_name}</li>
+            <li><strong>Status:</strong> ${booking.payment_status}</li>
+          </ul>
+          <p>You can view your bookings in the app at any time.</p>
+          <br>
+          <p>Thank you,<br>The FlySearchApp Team</p>
+        `
+    };
+
+    await transporter.sendMail(mailOptions);
+};
+
 module.exports.sendOtpEmailRegister = sendOtpEmailRegister;
 module.exports.sendOtpEmailChange = sendOtpEmailChange;
 module.exports.sendEmailForgotPassword = sendEmailForgotPassword;
+
+module.exports.sendBookingConfirmation = sendBookingConfirmation;

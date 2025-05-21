@@ -7,7 +7,7 @@ module.exports.validateInput = (schema) => {
                     return res.status(400).json({
                         message: "Validation error",
                     });
-                    res.body = value;
+                    req.body = value;
                 }
             }
             if(schema.query){
@@ -16,7 +16,7 @@ module.exports.validateInput = (schema) => {
                     return res.status(400).json({
                         message: "Validation error",
                     });
-                    res.query = value;
+                    req.query = value;
                 }
             }
             if(schema.params){
@@ -25,7 +25,7 @@ module.exports.validateInput = (schema) => {
                     return res.status(400).json({
                         message: "Validation error",
                     });
-                    res.params = value;
+                    req.params = value;
                 }
             }
             next();
