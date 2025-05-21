@@ -12,6 +12,7 @@ const promotion_schema = new mongoose.Schema({
     },
     code: {
         type: String,
+        unique: true,
         required: true,
     },
     thumbnail: {
@@ -36,7 +37,6 @@ const promotion_schema = new mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        enum: ["active", "inactive"],
         default: true,
     },
     deleted: {

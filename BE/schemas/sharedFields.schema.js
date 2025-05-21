@@ -19,7 +19,9 @@ const postTitleField = joi.string().max(256).required();
 const imageUrlField = joi.string().uri();
 const postContentField = joi.string().required();
 const roleTitleField = joi.string().max(20).required();
-
+const discountValueField = joi.number().integer().min(0).max(100).required();
+const dateField = joi.date().iso();
+const promotionSlot = joi.number().integer().min(0);
 module.exports = {
     passwordField,
     emailField,
@@ -36,5 +38,8 @@ module.exports = {
     postTitleField,
     imageUrlField,
     postContentField,
-    roleTitleField
+    roleTitleField,
+    discountValueField,
+    dateField,
+    promotionSlot
 };
