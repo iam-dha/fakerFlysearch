@@ -7,6 +7,7 @@ const OTP_EXPIRATION = 5; // minutes
 const OTP_VERIFIED_EXPIRATION = 5; // minutes
 const OTP_RESEND_LIMIT = 1; // minutes
 const PASSWORD_RESET_EXPIRATION = 15; // minutes
+const bookingHoldMinutes = 15; //minutes
 const CLIENT_URL = "http://localhost:5173";
 module.exports = {
     prefixAdmin: ADMIN_PATH,
@@ -29,5 +30,6 @@ module.exports = {
     maxSessions: MAX_SESSIONS,
     apiPath: API_PATH,
     otpExpiration: OTP_EXPIRATION,
-    otpResendLimit: OTP_RESEND_LIMIT
+    otpResendLimit: OTP_RESEND_LIMIT,
+    bookingHoldMinutes
 };

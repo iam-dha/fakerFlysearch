@@ -1,12 +1,12 @@
 //Model
 const Promotion = require("../../models/promotion.model");
 
-// [GET] /api/v1/admin/promotions?limit=x&page=y&filter=createAt&order=asc
+// [GET] /api/v1/admin/promotions?limit=x&page=y&filter=createAt&order=asc&keyword=ZLP&nowActive=true
 module.exports.getAllPromotions = async (req, res) => {
     const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
-    const limit =
-        parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
-    const { filter = "createdAt", order = "asc" } = req.query;
+    const limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
+    const { filter = "createdAt", order = "asc", keyword = "", nowActive } = req.query;
+
     const sortFields = [
         "createdAt",
         "deleted",
@@ -20,17 +20,33 @@ module.exports.getAllPromotions = async (req, res) => {
     const sortFilter = sortFields.includes(filter) ? filter : "createdAt";
     const sortOrder = order === "asc" ? 1 : -1;
     const skip = (page - 1) * limit;
+
+    const query = { deleted: false };
+
+    if (keyword) {
+        const regex = new RegExp(keyword, "i");
+        query.$or = [
+            { label: regex },
+            { code: regex },
+            { slug: regex }
+        ];
+    }
+
+    if (nowActive === "true") {
+        const now = new Date();
+        query.startDate = { $lte: now };
+        query.endDate = { $gte: now };
+    }
+
     try {
-        const promotions = await Promotion.find({
-            deleted: false,
-        })
+        const promotions = await Promotion.find(query)
             .skip(skip)
             .limit(limit)
             .select("-__v")
             .sort({ [sortFilter]: sortOrder });
-        const promotionsCount = await Promotion.countDocuments({
-            deleted: false,
-        });
+
+        const promotionsCount = await Promotion.countDocuments(query);
+
         return res.status(200).json({
             message: "Get promotions successfully",
             data: {

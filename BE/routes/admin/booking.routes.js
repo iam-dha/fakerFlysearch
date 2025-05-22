@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../../controllers/flight/booking.controller");
+const controller = require("../../controllers/admin/booking.controller");
 const authMiddleware = require("../../middlewares/authenticate.middleware");
 
 router.use(authMiddleware.checkAccessToken("Admin"));

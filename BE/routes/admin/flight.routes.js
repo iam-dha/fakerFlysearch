@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../../controllers/flight/flight.controller");
+const controller = require("../../controllers/admin/flight.controller");
 const authMiddleware = require("../../middlewares/authenticate.middleware");
-const { updateMarketingFieldsValidator, updatePromotionsValidator } = require("../../validators/flight.validator");
+const { updateMarketingFieldsValidator, updatePromotionsValidator } = require("../../schemas/flight.schema");
 
 router.get(
   "/",

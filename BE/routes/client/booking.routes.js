@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../../controllers/flight/booking.controller");
+const controller = require("../../controllers/client/booking.controller");
 const { validateInput } = require("../../middlewares/validate.middleware");
-const { createBookingValidator } = require("../../validators/booking.validator");
+const { createBookingValidator } = require("../../schemas/booking.schema");
 const { checkAccessToken } = require("../../middlewares/authenticate.middleware");
 
 

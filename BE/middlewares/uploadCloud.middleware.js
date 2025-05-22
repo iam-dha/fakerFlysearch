@@ -37,3 +37,38 @@ module.exports.upload = (req, res, next) => {
         next();
     } 
 }
+
+
+module.exports.uploadCloudImages = (fieldName = "image") => {
+  return async (req, res, next) => {
+    if (!req.files || !req.files[fieldName]) return next();
+
+    const uploadResults = [];
+    const files = Array.isArray(req.files[fieldName]) ? req.files[fieldName] : [req.files[fieldName]];
+
+    for (const file of files) {
+      const streamUpload = () => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "flysearch/hotel" },
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+          streamifier.createReadStream(file.buffer).pipe(stream);
+        });
+      };
+      try {
+        const result = await streamUpload();
+        uploadResults.push(result.secure_url);
+      } catch (err) {
+        console.error("Cloudinary upload error:", err);
+        return res.status(500).json({ message: "Upload failed" });
+      }
+    }
+
+    req.uploadedImages = uploadResults;
+    next();
+  };
+};
