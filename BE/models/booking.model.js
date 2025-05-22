@@ -39,4 +39,4 @@ const booking_schema = new mongoose.Schema({
   deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Booking', booking_schema, "booking");
+module.exports = mongoose.model('Booking', booking_schema, "bookings");

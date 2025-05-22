@@ -1,33 +1,27 @@
-const Joi = require("joi");
+const joi = require("joi");
 
-const basePromotionSchema = {
-  label: Joi.string().max(100).required(),
-  description: Joi.string().max(500).allow(""),
-  code: Joi.string().alphanum().max(50).required(),
-  thumbnail: Joi.string().uri().allow(""),
-  startDate: Joi.date().required(),
-  endDate: Joi.date().greater(Joi.ref("startDate")).required(),
-  totalSlot: Joi.number().integer().min(0).required(),
-  isIncluded: Joi.boolean().required(),
-  isActive: Joi.string().valid("active", "inactive").required(),
-  discountValue: Joi.number().min(0).required()
-};
+const {
+    descriptionField,
+    discountValueField,
+    dateField,
+    promotionSlot,
+    booleanField,
+    imageUrlField
+} = require("../sharedFields.schema");
 
-exports.createPromotionValidator = {
-  body: Joi.object(basePromotionSchema)
-};
+const promotionSchema = joi.object({
+    body: joi.object({
+        label: joi.string().required(),
+        description: descriptionField,
+        code: joi.string().required(),
+        thumbnail: imageUrlField,
+        startDate: dateField,
+        endDate: dateField.greater(joi.ref("startDate")),
+        totalSlot: promotionSlot,
+        isIncluded: booleanField,
+        isActive: booleanField,
+        discountValue: discountValueField,
+    }),
+});
 
-exports.updatePromotionValidator = {
-  body: Joi.object({
-    label: Joi.string().max(100),
-    description: Joi.string().max(500).allow(""),
-    code: Joi.string().alphanum().max(50),
-    thumbnail: Joi.string().uri().allow(""),
-    startDate: Joi.date(),
-    endDate: Joi.date().greater(Joi.ref("startDate")),
-    totalSlot: Joi.number().integer().min(0),
-    isIncluded: Joi.boolean(),
-    isActive: Joi.string().valid("active", "inactive"),
-    discountValue: Joi.number().min(0)
-  })
-};
+module.exports = { promotionSchema };

@@ -24,4 +24,4 @@ const flight_schema = new mongoose.Schema({
   thumbnail: { type: String, default: "" },
 });
 
-module.exports = mongoose.model("Flight", flight_schema,"flight");
+module.exports = mongoose.model("Flight", flight_schema,"flights");

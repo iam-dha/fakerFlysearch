@@ -64,57 +64,89 @@ module.exports.getAllPromotions = async (req, res) => {
 
 // [POST] /api/v1/admin/promotions
 module.exports.createPromotion = async (req, res) => {
+    const {
+        label,
+        description = "",
+        code,
+        thumbnail = "",
+        startDate = new Date(Date.now()),
+        endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        totalSlot = 0,
+        isIncluded = false,
+        isActive = true,
+        discountValue,
+    } = req.body;
     try {
-        const newPromotion = new Promotion(req.body);
+        const isExistPromotion = await Promotion.findOne({
+            code: code,
+            deleted: false,
+        });
+        if(isExistPromotion) {
+            return res.status(400).json({
+                message: "Promotion code already exists",
+            });
+        }
+        const newPromotion = new Promotion({
+            label,
+            description,
+            code,
+            thumbnail,
+            startDate,
+            endDate,
+            totalSlot,
+            isIncluded,
+            isActive,
+            discountValue,
+        });
         await newPromotion.save();
-        res.status(201).json({ message: "Promotion created successfully", promotion: newPromotion });
+        const promotionObj = newPromotion.toObject();
+        delete promotionObj.__v;
+        delete promotionObj._id;
+        return res.status(201).json({
+            message: "Create promotion successfully",
+            data: promotionObj,
+        });
     } catch (error) {
         console.error(`[POST /api/v1/admin/promotions] Error:`, error);
         return res.status(500).json({ message: "Internal server error" });
     }
-};
+}
 
-// [GET] /api/v1/admin/promotions/:id
-module.exports.getPromotionById = async (req, res) => {
+// [GET] /api/v1/admin/promotions/:slug
+module.exports.getPromotionBySlug = async (req, res) => {
+    const { slug } = req.params;
     try {
-        const promotion = await Promotion.findById(req.params.id);
-        if (!promotion || promotion.deleted) {
+        const promotion = await Promotion.findOne({
+            slug: slug,
+            deleted: false,
+        }).select("-__v");
+        if (!promotion) {
             return res.status(404).json({ message: "Promotion not found" });
         }
-        res.status(200).json({ message: "Promotion retrieved", promotion });
-    } catch (error) {
-        console.error(`[GET /api/v1/admin/promotions/:id] Error:`, error);
+        return res.status(200).json({
+            message: "Get promotion successfully",
+            data: promotion,
+        });
+    }
+    catch (error) {
+        console.error(`[GET /api/v1/admin/promotions/${slug}] Error:`, error);
         return res.status(500).json({ message: "Internal server error" });
     }
-};
+}
 
-// [PATCH] /api/v1/admin/promotions/:id
+// [PATCH] /api/v1/admin/promotions/:slug
 module.exports.updatePromotion = async (req, res) => {
+    const { slug } = req.params;
     try {
-        const promotion = await Promotion.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!promotion || promotion.deleted) {
+        const promotion = await Promotion.findOne({
+            slug: slug,
+            deleted: false,
+        });
+        if (!promotion) {
             return res.status(404).json({ message: "Promotion not found" });
         }
-        res.status(200).json({ message: "Promotion updated", promotion });
     } catch (error) {
-        console.error(`[PATCH /api/v1/admin/promotions/:id] Error:`, error);
+        console.error(`[PATCH /api/v1/admin/promotions/${slug}] Error:`, error);
         return res.status(500).json({ message: "Internal server error" });
     }
-};
-
-// [DELETE] /api/v1/admin/promotions/:id
-module.exports.deletePromotion = async (req, res) => {
-    try {
-        const promotion = await Promotion.findById(req.params.id);
-        if (!promotion || promotion.deleted) {
-            return res.status(404).json({ message: "Promotion not found" });
-        }
-        promotion.deleted = true;
-        promotion.deletedAt = new Date();
-        await promotion.save();
-        res.status(200).json({ message: "Promotion deleted successfully" });
-    } catch (error) {
-        console.error(`[DELETE /api/v1/admin/promotions/:id] Error:`, error);
-        return res.status(500).json({ message: "Internal server error" });
-    }
-};
+}

@@ -3,6 +3,7 @@ const userRoute = require("./user.routes");
 const authRoute = require("./auth.routes");
 const postRoute = require("./post.routes");
 const roleRoute = require("./role.routes");
+const promotionRoute = require("./promotion.routes");
 
 const bookingRoute = require("./booking.routes");
 module.exports = (app) => {
@@ -11,5 +12,5 @@ module.exports = (app) => {
     app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/posts`, postRoute);
     app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/roles`, roleRoute);
     app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/bookings`, bookingRoute);
-
+    app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/promotions`, promotionRoute);
 }
