@@ -26,4 +26,4 @@ const flight_schema = new mongoose.Schema({
   promotions: { type: [promotion_schema], default: [] }
 });
 
-module.exports = mongoose.model("Flight", flight_schema,"flight");
+module.exports = mongoose.model("Flight", flight_schema,"flights");

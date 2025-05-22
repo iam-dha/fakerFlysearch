@@ -5,6 +5,7 @@ const passenger_schema = new mongoose.Schema({
   type: { type: String, enum: ["adult", "child", "infant"], required: true },
   price: { type: Number, required: true }
 });
+
 const addon_schema = new mongoose.Schema({
   type: { type: String, enum: ["baggage", "meal", "priority"] },
   label: String,
@@ -23,4 +24,4 @@ const booking_schema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Booking', booking_schema, "booking");
+module.exports = mongoose.model('Booking', booking_schema, "bookings");
