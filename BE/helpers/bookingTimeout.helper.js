@@ -1,5 +1,5 @@
-const Booking = require("../../models/booking.model");
-const Flight = require("../../models/flight.model");
+const Booking = require("../models/booking.model");
+const Flight = require("../models/flight.model");
 
 const releaseExpiredBookings = async () => {
   const now = new Date();

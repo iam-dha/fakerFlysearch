@@ -5,7 +5,8 @@ const User = require("../../models/user.model");
 const mailer = require("../../services/mailer.service");
 
 exports.bookMultipleRooms = async (req, res) => {
-  const { userId, hotelId, rooms, check_in, check_out } = req.body;
+  const userId = req.userId;
+  const { hotelId, rooms, check_in, check_out } = req.body;
 
   if (!userId || !hotelId || !Array.isArray(rooms) || rooms.length === 0 || !check_in || !check_out) {
     return res.status(400).json({ message: "Missing or invalid fields" });

@@ -54,7 +54,7 @@ const newPassSchema = joi.object({
         reNewPassword: joi.ref('newPassword')
     }),
     params: joi.object({
-        token: joi.string().length(64).required(),
+        token: joi.string().length(16).required(), //trong sharedFields để là 16 mà 
     })
 })
 

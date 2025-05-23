@@ -35,3 +35,9 @@ exports.updatePromotionsValidator = {
     ).required()
   })
 };
+
+exports.confirmPriceSchema = {
+  body: Joi.object({
+    flightOffer: Joi.object().unknown(true).required()
+  })
+};
