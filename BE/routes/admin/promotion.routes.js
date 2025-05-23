@@ -30,4 +30,25 @@ router.post(
     controller.createPromotion
 );
 
+router.get("/:slug",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["READ_PROMOTION"]),
+    controller.getPromotionBySlug
+);
+
+router.patch("/:slug",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["UPDATE_PROMOTION"]),
+    fileUpload.single("thumbnail"),
+    uploadCloud.upload,
+    validateMiddleware.validateInput(promotionSchema),
+    controller.updatePromotion
+);
+
+router.delete("/:slug",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["DELETE_PROMOTION"]),
+    controller.deletePromotion
+);
+
 module.exports = router;
