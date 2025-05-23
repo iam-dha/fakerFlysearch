@@ -52,3 +52,9 @@ exports.flightFullSchema = Joi.object({
     thumbnail: Joi.string().uri().optional()
   })
 });
+
+exports.confirmPriceSchema = {
+  body: Joi.object({
+    flightOffer: Joi.object().unknown(true).required()
+  })
+};

@@ -8,12 +8,13 @@ const systemConfig = require("./config/system.js");
 require("dotenv").config();
 const cron = require("node-cron");
 const releaseExpiredBookings = require("./helpers/bookingTimeout.helper");
+const amadeus = require("./config/amadeus");
 
 //Add route
 const clientRoute = require("./routes/client/index.routes");
 const adminRoute = require("./routes/admin/index.routes");
 //Flight route
-const flightRoutes = require("./routes/flight/flight.routes");
+const flightRoutes = require("./routes/client/flight.routes");
 const adminBookingRoutes = require("./routes/admin/booking.routes");
 
 
@@ -61,7 +62,7 @@ app.use(`${systemConfig.apiPath}/v1/admin/bookings`, adminBookingRoutes);
 
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`);
   })
 
 // Chạy mỗi 10 phút
