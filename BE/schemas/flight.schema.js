@@ -35,3 +35,20 @@ exports.updatePromotionsValidator = {
     ).required()
   })
 };
+
+exports.flightFullSchema = Joi.object({
+  body: Joi.object({
+    iata_from: Joi.string().length(3).uppercase().required(),
+    iata_to: Joi.string().length(3).uppercase().required(),
+    departure_time: Joi.string().pattern(/^\d{2}:\d{2}$/).required(),
+    departure_date: Joi.date().iso().required(),
+    flight_number: Joi.string().alphanum().max(10).required(),
+    price: Joi.number().min(0).required(),
+    seat: Joi.object({
+      economy: Joi.number().integer().min(0).required(),
+      premium: Joi.number().integer().min(0).required()
+    }).required(),
+    title: Joi.string().max(200).required(),
+    thumbnail: Joi.string().uri().optional()
+  })
+});
