@@ -1,7 +1,7 @@
 const amadeus = require("../../config/amadeus");
 const Flight = require("../../models/flight.model");
 
-module.exports.searchAndStoreFlights = async (req, res) => {
+exports.searchAndStoreFlights = async (req, res) => {
   const { from, to, date } = req.query;
 
   try {
@@ -10,7 +10,6 @@ module.exports.searchAndStoreFlights = async (req, res) => {
       destinationLocationCode: to,
       departureDate: date,
       adults: "1",
-      nonStop: true,
       currencyCode: "VND",
       max: 10,
     });
@@ -56,7 +55,7 @@ module.exports.searchAndStoreFlights = async (req, res) => {
       }
     }
 
-    res.json({
+    return res.status(200).json({
       message: "Flights fetched and saved (if not exist)",
       saved,
       results: await Flight.find({

@@ -26,8 +26,8 @@ exports.getAvailableCars = async (req, res) => {
 };
 
 exports.bookCar = async (req, res) => {
-    const userId = req.userId;
-    const { routeId, passenger_name, phone } = req.body;
+  const userId = req.userId;
+  const { routeId, passenger_name, phone } = req.body;
 
     if (!userId || !routeId || !passenger_name) {
         return res.status(400).json({ message: "Missing required fields" });
