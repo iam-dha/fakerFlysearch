@@ -8,6 +8,8 @@ router.get("/", authMiddleWare.checkAccessToken("Admin"), controller.getAllUserI
 
 router.get("/:userId", authMiddleWare.checkAccessToken("Admin"), authMiddleWare.checkPermission(["READ_USER"]) , controller.getUserInfo);
 
+router.post("/", authMiddleWare.checkAccessToken("Admin"), authMiddleWare.checkPermission(["ACCESS_CONTROL_ADMIN"]) , controller.createUser);
+
 router.patch("/:userId", authMiddleWare.checkAccessToken("Admin"), authMiddleWare.checkPermission(["UPDATE_USER"]) , controller.changeUserInfo);
 
 router.delete("/:userId", authMiddleWare.checkAccessToken("Admin"), authMiddleWare.checkPermission(["DELETE_USER"]) , controller.deleteUser);

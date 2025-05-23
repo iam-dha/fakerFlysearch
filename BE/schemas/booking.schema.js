@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 
-const createBookingValidator = {
+exports.createBookingValidator = {
   body: Joi.object({
     flightId: Joi.string().required(),
     returnFlightId: Joi.string().optional(),
@@ -25,4 +25,6 @@ const createBookingValidator = {
   })
 };
 
-module.exports = createBookingValidator;
+module.exports = {
+  createBookingValidator
+};
