@@ -27,7 +27,7 @@ router.get(
 router.post(
     "/",
     authMiddleware.checkAccessToken("Admin"),
-    authMiddleware.checkPermission(["READ_FLIGHT"]),
+    authMiddleware.checkPermission(["CREATE_FLIGHT"]),
     fileUpload.single("thumbnail"),
     uploadCloud.upload,
     validateMiddleWare.validateInput(flightFullSchema),
@@ -37,7 +37,7 @@ router.post(
 router.patch(
     "/:flight_number",
     authMiddleware.checkAccessToken("Admin"),
-    authMiddleware.checkPermission(["READ_FLIGHT"]),
+    authMiddleware.checkPermission(["UPDATE_FLIGHT"]),
     validateMiddleWare.validateInput(flightFullSchema),
     controller.updateFlight
 );
@@ -45,7 +45,7 @@ router.patch(
 router.delete(
     "/:flight_number",
     authMiddleware.checkAccessToken("Admin"),
-    authMiddleware.checkPermission(["READ_FLIGHT"]),
+    authMiddleware.checkPermission(["DELETE_FLIGHT"]),
     controller.deleteFlight
 );
 

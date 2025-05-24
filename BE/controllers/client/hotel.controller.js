@@ -92,3 +92,42 @@ exports.getHotelList = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getRoomsByHotelId = async (req, res) => {
+  const { hotelId } = req.params;
+  const { type, page = 1, limit = 10 } = req.query;
+
+  try {
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel || hotel.deleted) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    const query = { hotel: hotelId, deleted: false };
+
+    if (type && ["standard", "deluxe"].includes(type.toLowerCase())) {
+      query.type = type.toLowerCase();
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const rooms = await Room.find(query)
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Room.countDocuments(query);
+
+    return res.status(200).json({
+      message: "OK",
+      data: rooms,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit),
+        totalItems: total
+      }
+    });
+  } catch (err) {
+    console.error("[GET /hotels/:hotelId/rooms] Error:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

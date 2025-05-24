@@ -18,12 +18,24 @@ exports.searchAndStoreFlights = async (req, res) => {
 
     let saved = 0;
 
-    for (const offer of flightOffers) {
-      const itinerary = offer.itineraries[0]; 
-      const segment = itinerary.segments[0];
+    for (const offer of response.data) {
+      const segment = offer.itineraries[0].segments[0];
 
-      const flight_number = `${segment.number}-${date}`;
-      const exists = await Flight.findOne({ flight_number });
+      const flightData = {
+        iata_from: segment.departure.iataCode,
+        iata_to: segment.arrival.iataCode,
+        departure_date: new Date(segment.departure.at.split("T")[0]),
+        departure_time: segment.departure.at.split("T")[1].slice(0, 5),
+        price: parseFloat(offer.price.total),
+        seat: { economy: 50, premium: 10 }, 
+      };
+
+      const exists = await Flight.findOne({
+        iata_from: flightData.iata_from,
+        iata_to: flightData.iata_to,
+        departure_date: flightData.departure_date,
+        departure_time: flightData.departure_time,
+      });
 
       if (!exists) {
         const newFlight = new Flight({

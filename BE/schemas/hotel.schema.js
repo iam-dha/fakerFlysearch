@@ -42,3 +42,20 @@ exports.getHotelListSchema = {
     iata: Joi.string().length(3).uppercase().optional()
   })
 };
+
+exports.getRoomsByHotelIdSchema = {
+  params: Joi.object({
+    hotelId: Joi.string()
+      .regex(/^[a-f\d]{24}$/i)
+      .required()
+      .messages({
+        "string.pattern.base": "Invalid hotelId format"
+      })
+  }),
+
+  query: Joi.object({
+    type: Joi.string().valid("standard", "deluxe").optional(),
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(10)
+  })
+};
