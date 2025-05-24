@@ -19,7 +19,7 @@ const busRoute_schema = new mongoose.Schema({
   from_iata: { type: String, required: true, uppercase: true }, // e.g. SGN, HAN
   car_type: { type: String, required: true },                   // e.g. Sedan
   service_type: { type: String, enum: ["standard", "fast"], default: "standard" },
-  price: { type: Number, required: true },                      // price per car
+  price: { type: Number, required: true },                      // price per Kms
   max_passengers: { type: Number, required: true },
   max_baggage: { type: Number, required: true },
   is_24h: { type: Boolean, default: false },                    // Available 24 hours

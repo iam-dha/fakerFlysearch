@@ -20,7 +20,7 @@ exports.searchAndStoreFlights = async (req, res) => {
 
     for (const offer of flightOffers) {
       const itinerary = offer.itineraries[0]; 
-      const segment = itinerary.segments[0];
+      const segment = itinerary.segments[0];ç
 
       const flight_number = `${segment.number}-${date}`;
       const exists = await Flight.findOne({ flight_number });

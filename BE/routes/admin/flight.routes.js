@@ -1,26 +1,52 @@
 const express = require("express");
+const multer = require("multer");
 const router = express.Router();
 const controller = require("../../controllers/admin/flight.controller");
 const authMiddleware = require("../../middlewares/authenticate.middleware");
-const { updateMarketingFieldsValidator, updatePromotionsValidator } = require("../../schemas/flight.schema");
+const validateMiddleWare = require("../../middlewares/validate.middleware")
+const {
+    flightFullSchema
+} = require("../../schemas/flight.schema");
+const fileUpload = multer();
+const uploadCloud = require("../../middlewares/uploadCloud.middleware");
 
 router.get(
-  "/",
-  authMiddleware.checkAccessToken("Admin"),
-  controller.getAllFlights
+    "/",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["READ_FLIGHT"]),
+    controller.getAllFlights
 );
-router.patch(
-  "/:id",
-  authMiddleware.checkAccessToken("Admin"),
-  validateMiddleware.validateInput(updateMarketingFieldsValidator),
-  controller.updateMarketingFields
+
+router.get(
+    "/:flight_number",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["READ_FLIGHT"]),
+    controller.getFlight
+);
+
+router.post(
+    "/",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["CREATE_FLIGHT"]),
+    fileUpload.single("thumbnail"),
+    uploadCloud.upload,
+    validateMiddleWare.validateInput(flightFullSchema),
+    controller.createFlight
 );
 
 router.patch(
-  "/:id/promotions",
-  authMiddleware.checkAccessToken("Admin"),
-  validateMiddleware.validateInput(updatePromotionsValidator),
-  controller.updatePromotions
+    "/:flight_number",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["UPDATE_FLIGHT"]),
+    validateMiddleWare.validateInput(flightFullSchema),
+    controller.updateFlight
+);
+
+router.delete(
+    "/:flight_number",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission(["DELETE_FLIGHT"]),
+    controller.deleteFlight
 );
 
 module.exports = router;

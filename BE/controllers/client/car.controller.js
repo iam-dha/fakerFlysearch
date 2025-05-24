@@ -13,7 +13,7 @@ exports.getAvailableCars = async (req, res) => {
     const cars = await BusRoute.find({
       from_iata: iata.toUpperCase(),
       deleted: false
-    }).populate("company");
+    }).populate("company"); 
 
     return res.status(200).json({ message: "OK", data: cars });
   } catch (err) {
