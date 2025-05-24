@@ -1,10 +1,87 @@
 const express = require("express");
-const router = express.Router();
+const multer = require("multer");
 const controller = require("../../controllers/admin/hotel.controller");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-router.get("/", controller.getAllHotels);
-router.post("/", controller.createHotel);
-router.patch("/:id", controller.updateHotel);
-router.delete("/:id", controller.deleteHotel);
+const uploadCloud = require("../../middlewares/uploadCloud.middleware");
+const authMiddleware = require("../../middlewares/authenticate.middleware");
+
+const router = express.Router();
+
+router.get(
+    "/",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("READ_HOTEL"),
+    controller.getAllHotels
+);
+
+router.post(
+    "/",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("CREATE_HOTEL"),
+    upload.single("thumbnail"),
+    uploadCloud.upload,
+    controller.createHotel
+);
+
+router.get(
+    "/rooms/:id",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("READ_HOTEL"),
+    controller.getHotelRoom
+);
+
+router.get(
+    "/:id",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("READ_HOTEL"),
+    controller.getHotelById
+);
+
+router.patch(
+    "/:id",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("UPDATE_HOTEL"),
+    upload.single("thumbnail"),
+    uploadCloud.upload,
+    controller.updateHotel
+);
+
+router.patch(
+    "/rooms/:id",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("UPDATE_HOTEL"),
+    upload.single("thumbnail"),
+    uploadCloud.upload,
+    upload.array("images", 10),
+    uploadCloud.uploadMultipleImages,
+    controller.updateHotelRoom
+);
+
+router.post(
+    "/:id/rooms",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("CREATE_HOTEL"),
+    upload.single("thumbnail"),
+    uploadCloud.upload,
+    upload.array("images", 10),
+    uploadCloud.uploadMultipleImages,
+    controller.createHotelRoom
+);
+
+router.delete(
+    "/:id",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("DELETE_HOTEL"),
+    controller.deleteHotel
+);
+
+router.delete(
+    "/rooms/:id",
+    authMiddleware.checkAccessToken("Admin"),
+    authMiddleware.checkPermission("DELETE_HOTEL"),
+    controller.deleteHotelRoom
+);
 
 module.exports = router;

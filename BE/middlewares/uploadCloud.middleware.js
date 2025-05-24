@@ -72,3 +72,29 @@ module.exports.uploadCloudImages = (fieldName = "image") => {
     next();
   };
 };
+
+const uploadMultiple = async (files) => {
+  const urls = [];
+  for (const file of files) {
+    const url = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream((err, result) => {
+        if (err) reject(err);
+        else resolve(result.secure_url);
+      });
+      streamifier.createReadStream(file.buffer).pipe(stream);
+    });
+    urls.push(url);
+  }
+  return urls;
+};
+
+module.exports.uploadMultipleImages = async (req, res, next) => {
+  try {
+    const files = req.files?.photos || [];
+    req.photoURLs = await uploadPhotosToCloudinary(files);
+    next();
+  } catch (err) {
+    console.error("Upload failed:", err);
+    res.status(500).json({ message: "Image upload failed" });
+  }
+};
