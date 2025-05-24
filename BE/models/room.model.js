@@ -8,7 +8,8 @@ const roomSchema = new mongoose.Schema({
   max_guests: { type: Number, required: true },
   description: { type: String, default: "" },
   thumbnails: { type: [String], default: [] },
-  deleted: { type: Boolean, default: false }
+  deleted: { type: Boolean, default: false },
+  photos: { type: [String], default: []}
 }, { timestamps: true });
 
 module.exports = mongoose.model("Room", roomSchema);

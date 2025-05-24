@@ -1,4 +1,4 @@
-const parseFullsearchParams = (req, res, next) => {
+module.exports.parseFullsearchParams = (req, res, next) => {
   const { ap, dt, ps, sc } = req.query;
 
   // 1. ap: SGN.HAN => from, to
@@ -44,5 +44,3 @@ const parseFullsearchParams = (req, res, next) => {
 
   next();
 };
-
-module.exports = parseFullsearchParams;

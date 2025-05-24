@@ -13,7 +13,7 @@ exports.getAvailableCars = async (req, res) => {
     const cars = await BusRoute.find({
       from_iata: iata.toUpperCase(),
       deleted: false
-    }).populate("company");
+    }).populate("company"); 
 
     return res.status(200).json({ message: "OK", data: cars });
   } catch (err) {
@@ -23,7 +23,8 @@ exports.getAvailableCars = async (req, res) => {
 };
 
 exports.bookCar = async (req, res) => {
-  const { userId, routeId, passenger_name, phone } = req.body;
+  const userId = req.userId;
+  const { routeId, passenger_name, phone } = req.body;
 
   if (!userId || !routeId || !passenger_name) {
     return res.status(400).json({ message: "Missing required fields" });

@@ -36,6 +36,11 @@ exports.updatePromotionsValidator = {
   })
 };
 
+exports.confirmPriceSchema = {
+  body: Joi.object({
+    flightOffer: Joi.object().unknown(true).required()
+  })
+};
 exports.flightFullSchema = Joi.object({
   body: Joi.object({
     iata_from: Joi.string().length(3).uppercase().required(),

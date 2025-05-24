@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const busCompany_schema = new mongoose.Schema({
   name: { type: String, required: true },
-  logo: { type: String, default: "" },
   contact: {
     phone: { type: String, default: "" },
     email: { type: String, default: "" },
@@ -16,6 +15,7 @@ module.exports = mongoose.model("BusCompany", busCompany_schema, "bus_company");
 
 const busRoute_schema = new mongoose.Schema({
   company: { type: mongoose.Schema.Types.ObjectId, ref: "BusCompany", required: true },
+  logo: { type: String, default: "" },
   from_iata: { type: String, required: true, uppercase: true }, // e.g. SGN, HAN
   car_type: { type: String, required: true },                   // e.g. Sedan
   service_type: { type: String, enum: ["standard", "fast"], default: "standard" },
