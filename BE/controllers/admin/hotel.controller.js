@@ -26,7 +26,7 @@ exports.getAllHotels = async (req, res) => {
                     hotel: hotel._id,
                     deleted: false,
                 })
-                    .select("-__v")
+                    .select("-__v -hotel")
                     .lean();
                 return hotel;
             })
@@ -91,7 +91,7 @@ exports.createHotelRoom = async (req, res) => {
         description = "",
         thumbnail = "",
     } = req.body;
-    const photos = req.photoURLs || [];
+    const photos = req.body.images|| [];
     try {
         const hotel = await Hotel.findOne({
             _id: hotelId,

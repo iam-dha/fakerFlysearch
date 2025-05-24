@@ -73,28 +73,39 @@ module.exports.uploadCloudImages = (fieldName = "image") => {
   };
 };
 
-const uploadMultiple = async (files) => {
-  const urls = [];
-  for (const file of files) {
-    const url = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream((err, result) => {
-        if (err) reject(err);
-        else resolve(result.secure_url);
-      });
-      streamifier.createReadStream(file.buffer).pipe(stream);
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream((err, result) => {
+      if (err) reject(err);
+      else resolve(result.secure_url);
     });
-    urls.push(url);
-  }
-  return urls;
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
 };
 
-module.exports.uploadMultipleImages = async (req, res, next) => {
+module.exports.uploadRoomImages = async (req, res, next) => {
   try {
-    const files = req.files?.photos || [];
-    req.photoURLs = await uploadPhotosToCloudinary(files);
+    const result = {};
+
+    // thumbnail (1 ảnh)
+    if (req.files?.thumbnail?.[0]) {
+      result.thumbnail = await uploadToCloudinary(req.files.thumbnail[0].buffer);
+    }
+
+    // images (nhiều ảnh)
+    if (req.files?.images?.length > 0) {
+      result.images = await Promise.all(
+        req.files.images.map(file => uploadToCloudinary(file.buffer))
+      );
+    }
+
+    // Gán vào req.body để controller sử dụng
+    if (result.thumbnail) req.body.thumbnail = result.thumbnail;
+    if (result.images) req.body.images = result.images;
+
     next();
   } catch (err) {
-    console.error("Upload failed:", err);
+    console.error("Upload error:", err);
     res.status(500).json({ message: "Image upload failed" });
   }
 };
