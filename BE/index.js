@@ -14,7 +14,6 @@ const amadeus = require("./config/amadeus");
 const clientRoute = require("./routes/client/index.routes");
 const adminRoute = require("./routes/admin/index.routes");
 //Flight route
-const flightRoutes = require("./routes/client/flight.routes");
 const adminBookingRoutes = require("./routes/admin/booking.routes");
 
 
@@ -57,7 +56,6 @@ app.use(methodOverride("_method"));
 clientRoute(app);
 adminRoute(app);
 
-app.use(`${systemConfig.apiPath}/v1/flights`, flightRoutes);
 app.use(`${systemConfig.apiPath}/v1/admin/bookings`, adminBookingRoutes);
 
 
