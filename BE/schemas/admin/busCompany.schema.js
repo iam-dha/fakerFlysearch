@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-exports.createOrUpdateSchema = {
+const createOrUpdateSchema = Joi.object({
   body: Joi.object({
     name: Joi.string().required(),
     logo: Joi.string().uri().allow(""),
@@ -11,7 +11,7 @@ exports.createOrUpdateSchema = {
       website: Joi.string().uri().allow("")
     }).optional()
   })
-};
+});
 
 module.exports = {
   createOrUpdateSchema

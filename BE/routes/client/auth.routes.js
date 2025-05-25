@@ -8,7 +8,7 @@ const validateMiddleWare = require("../../middlewares/validate.middleware");
 const router = express.Router();
 // Joi validate schema
 const {
-    loginSchema,
+    validateLogin,
     emailSchema,
     registerVerifySchema,
     changePassSchema,
@@ -19,7 +19,7 @@ const {
 router.post(
     "/login",
     loginLimiter,
-    validateMiddleWare.validateInput(loginSchema),
+    validateMiddleWare.validateInput(validateLogin),
     authMiddleWare.checkLoginRole(["User"]),
     controller.loginPost
 );

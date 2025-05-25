@@ -7,11 +7,12 @@ const busCompany_schema = new mongoose.Schema({
     email: { type: String, default: "" },
     website: { type: String, default: "" }
   },
+  logo: { type: String, default: "" }, 
   description: { type: String, default: "" },
   deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
-module.exports = mongoose.model("BusCompany", busCompany_schema, "bus_company");
+module.exports.BusCompany = mongoose.model("BusCompany", busCompany_schema, "bus_company");
 
 const busRoute_schema = new mongoose.Schema({
   company: { type: mongoose.Schema.Types.ObjectId, ref: "BusCompany", required: true },
@@ -28,4 +29,4 @@ const busRoute_schema = new mongoose.Schema({
   deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
-module.exports = mongoose.model("BusRoute", busRoute_schema, "bus_route");
+module.exports.BusRoute = mongoose.model("BusRoute", busRoute_schema, "bus_route");

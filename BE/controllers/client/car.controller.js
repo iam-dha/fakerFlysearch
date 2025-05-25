@@ -1,4 +1,4 @@
-const BusRoute = require("../../models/busCompany.model");
+const {BusRoute} = require("../../models/busCompany.model");
 const Booking = require("../../models/booking.model");
 const mailer = require("../../services/mailer.service");
 const User = require("../../models/user.model");

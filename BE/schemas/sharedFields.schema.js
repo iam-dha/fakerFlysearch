@@ -1,9 +1,14 @@
 const joi = require("joi");
 
+// const passwordField = joi.string().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/).required();
 const passwordField = joi
-    .string()
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
-    .required();
+  .string()
+  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
+  .required()
+  .messages({
+    "string.pattern.base":
+      "Password must be at least 8 characters and include lowercase, uppercase, number, and special character",
+  });
 const emailField = joi.string().email().required();
 const otpField = joi.number().integer().max(999999).min(100000).required();
 const fullNameField = joi.string().min(6).max(30).required();

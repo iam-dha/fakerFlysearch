@@ -1,16 +1,52 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../../controllers/admin/busRoute.controller");
-const { checkAccessToken } = require("../../middlewares/authenticate.middleware");
+const multer = require("multer");
+const upload = multer();
+const uploadCloud = require("../../middlewares/uploadCloud.middleware");
+const {
+    checkAccessToken,
+    checkPermission,
+} = require("../../middlewares/authenticate.middleware");
 const { validateInput } = require("../../middlewares/validate.middleware");
-const { BusRouteSchema } = require("../../schemas/admin/busRoute.schema");
+const { busRouteSchema } = require("../../schemas/admin/busRoute.schema");
 
-router.use(checkAccessToken("Admin"));
+router.get(
+    "/",
+    checkAccessToken("Admin"),
+    checkPermission(["READ_BUS"]),
+    controller.getAll
+);
+router.post(
+    "/:companyId",
+    checkAccessToken("Admin"),
+    checkPermission(["CREATE_BUS"]),
+    upload.single("logo"),
+    uploadCloud.upload,
+    validateInput(busRouteSchema),
+    controller.create
+);
 
-router.get("/", controller.getAll);
-router.post("/", validateInput(BusRouteSchema), controller.create);
-router.get("/:id", controller.getById);
-router.patch("/:id", validateInput(BusRouteSchema), controller.update);
-router.delete("/:id", controller.softDelete);
+router.get(
+    "/:id",
+    checkAccessToken("Admin"),
+    checkPermission(["READ_BUS"]),
+    controller.getById
+);
+router.patch(
+    "/:id",
+    checkAccessToken("Admin"),
+    checkPermission(["UPDATE_BUS"]),
+    upload.single("logo"),
+    uploadCloud.upload,
+    validateInput(busRouteSchema),
+    controller.update
+);
+router.delete(
+    "/:id",
+    checkAccessToken("Admin"),
+    checkPermission(["DELETE_BUS"]),
+    controller.softDelete
+);
 
 module.exports = router;
