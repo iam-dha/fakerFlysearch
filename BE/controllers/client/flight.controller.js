@@ -1,4 +1,4 @@
-const amadeus = require("../config/amadeus");
+const amadeus = require("../../config/amadeus");
 const Flight = require("../../models/flight.model");
 
 module.exports.searchAndStoreFlights = async (req, res) => {
@@ -21,7 +21,7 @@ module.exports.searchAndStoreFlights = async (req, res) => {
 
     for (const offer of flightOffers) {
       const segment = offer.itineraries[0].segments[0];
-
+      const flight_number = `${segment.carrierCode}${segment.number}`;
       const flightData = {
         iata_from: segment.departure.iataCode,
         iata_to: segment.arrival.iataCode,
@@ -37,8 +37,6 @@ module.exports.searchAndStoreFlights = async (req, res) => {
       });
 
       if (!exists) {
-        const segment = offer.itineraries[0].segments[0];
-        const flight_number = `${segment.carrierCode}${segment.number}`;
         const newFlight = new Flight({
           iata_from: segment.departure.iataCode,
           iata_to: segment.arrival.iataCode,
