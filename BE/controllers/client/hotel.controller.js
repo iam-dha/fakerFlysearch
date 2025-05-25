@@ -131,3 +131,31 @@ exports.getRoomsByHotelId = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getHotelsByIata = async (req, res) => {
+  const { iata } = req.params;
+
+  if (!iata) {
+    return res.status(400).json({ message: "Missing IATA code" });
+  }
+
+  try {
+    const hotels = await Hotel.find({
+      iata: iata.toUpperCase(),
+      deleted: false
+    }).select("name address thumbnail iata");
+
+    if (hotels.length === 0) {
+      return res.status(404).json({ message: "No hotels found for this IATA code" });
+    }
+
+    return res.status(200).json({
+      message: "Hotels found",
+      count: hotels.length,
+      data: hotels
+    });
+  } catch (err) {
+    console.error(`[GET /hotels/iata/${iata}] Error:`, err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
