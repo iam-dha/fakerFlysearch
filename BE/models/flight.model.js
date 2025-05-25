@@ -13,10 +13,12 @@ const flight_schema = new mongoose.Schema({
   departure_date: { type: Date, required: true },
   price: { type: Number, required: true },
   seat: { type: seat_schema, required: true },
-  flight_number: { type: String, required: true, unique: true },  
+  flight_number: { type: String, required: true },  
   title: { type: String, required: true },
   thumbnail: { type: String, default: "" },
   deleted: { type: Boolean, default: false },
 }, {timestamps: true});
+
+flight_schema.index({ flight_number: 1, departure_date: 1 }, { unique: true });
 
 module.exports = mongoose.model("Flight", flight_schema,"flights");

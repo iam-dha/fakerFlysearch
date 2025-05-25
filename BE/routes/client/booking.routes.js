@@ -31,4 +31,10 @@ router.get(
   controller.getBookingById
 );
 
+router.delete("/:bookingId", checkAccessToken("User"), controller.deleteBooking);
+// DELETE /api/v1/bookings/:bookingId
+
+router.post("/pay-all", checkAccessToken("User"), controller.payAllUserBookings);
+// POST /api/v1/bookings/pay-all
+
 module.exports = router;
