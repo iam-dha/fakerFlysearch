@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 
-exports.createBookingValidator = {
+const createBookingValidator = {
   body: Joi.object({
     flightId: Joi.string().required(),
     returnFlightId: Joi.string().optional(),

@@ -11,7 +11,7 @@ exports.searchAndStoreFlights = async (req, res) => {
       departureDate: date,
       adults: "1",
       currencyCode: "VND",
-      max: 5
+      max: 5,
     });
 
     const flightOffers = response.data;
@@ -27,7 +27,7 @@ exports.searchAndStoreFlights = async (req, res) => {
         departure_date: new Date(segment.departure.at.split("T")[0]),
         departure_time: segment.departure.at.split("T")[1].slice(0, 5),
         price: parseFloat(offer.price.total),
-        seat: { economy: 50, premium: 10 }, 
+        seat: { economy: 50, premium: 10 },
       };
 
       const exists = await Flight.findOne({
@@ -38,6 +38,8 @@ exports.searchAndStoreFlights = async (req, res) => {
       });
 
       if (!exists) {
+        const segment = offer.itineraries[0].segments[0];
+        const flight_number = `${segment.carrierCode}${segment.number}`;
         const newFlight = new Flight({
           iata_from: segment.departure.iataCode,
           iata_to: segment.arrival.iataCode,
@@ -46,10 +48,10 @@ exports.searchAndStoreFlights = async (req, res) => {
           price: Number(offer.price.total),
           seat: {
             economy: 50,
-            premium: 10
+            premium: 10,
           },
           flight_number,
-          title: `${segment.carrierCode} ${segment.number}`
+          title: `${segment.carrierCode} ${segment.number}`,
         });
 
         await newFlight.save();
@@ -60,14 +62,21 @@ exports.searchAndStoreFlights = async (req, res) => {
     return res.status(200).json({
       message: "Flights fetched and saved (if not exist)",
       saved,
-      results: await Flight.find({ iata_from: from, iata_to: to, departure_date: date }),
-      originalFlightOffers: flightOffers
+      results: await Flight.find({
+        iata_from: from,
+        iata_to: to,
+        departure_date: date,
+      }),
+      originalFlightOffers: flightOffers,
     });
   } catch (error) {
-    console.error("Amadeus search/store error:", error.response?.data || error.message);
+    console.error(
+      "Amadeus search/store error:",
+      JSON.stringify(error, null, 2)
+    );
     return res.status(500).json({
       message: "Failed to fetch/store flights",
-      error: error.response?.data || error.message
+      error: error.response?.data || error.message,
     });
   }
 };
@@ -84,74 +93,147 @@ exports.confirmFlightPrice = async (req, res) => {
       JSON.stringify({
         data: {
           type: "flight-offers-pricing",
-          flightOffers: [flightOffer]
-        }
+          flightOffers: [flightOffer],
+        },
       })
     );
 
     return res.status(200).json({
       message: "Price confirmed",
-      data: response.data
+      data: response.data,
     });
   } catch (error) {
-    console.error("Confirm price error:", error.response?.data || error.message || error);
+    console.error(
+      "Confirm price error:",
+      error.response?.data || error.message || error
+    );
     return res.status(500).json({
       message: "Failed to confirm price with Amadeus",
-      error: error.response?.data || error.message || "Unknown error"
+      error: error.response?.data || error.message || "Unknown error",
     });
   }
 };
 
-const calculateTotalPrice = (basePrice, passengers) => {
-  const { adults, children, infants } = passengers;
-  return (
-    basePrice * adults + basePrice * 0.75 * children + basePrice * 0.1 * infants
-  );
+// const calculateTotalPrice = (basePrice, passengers) => {
+//   const { adults, children, infants } = passengers;
+//   return (
+//     basePrice * adults + basePrice * 0.75 * children + basePrice * 0.1 * infants
+//   );
+// };
+
+// exports.fullSearchHandler = async (req, res) => {
+//   const { from, to, departureDate, returnDate, passengers, seat_class } =
+//     req.fullsearch;
+
+//   try {
+//     const seatKey = `seat.${seat_class.toLowerCase()}`;
+
+//     const outbound = await Flight.find({
+//       iata_from: from,
+//       iata_to: to,
+//       departure_date: departureDate,
+//       [seatKey]: { $gt: 0 },
+//       deleted: false,
+//     }).sort({ departure_time: 1 });
+
+//     const outboundWithPrice = outbound.map((f) => ({
+//       ...f._doc,
+//       total_price: calculateTotalPrice(f.price, passengers),
+//     }));
+
+//     let inboundWithPrice = [];
+//     if (returnDate) {
+//       const inbound = await Flight.find({
+//         iata_from: to,
+//         iata_to: from,
+//         departure_date: returnDate,
+//         [seatKey]: { $gt: 0 },
+//         deleted: false,
+//       }).sort({ departure_time: 1 });
+
+//       inboundWithPrice = inbound.map((f) => ({
+//         ...f._doc,
+//         total_price: calculateTotalPrice(f.price, passengers),
+//       }));
+//     }
+
+//     res.status(200).json({
+//       message: "Full search results",
+//       outbound: outboundWithPrice,
+//       inbound: inboundWithPrice,
+//     });
+//   } catch (error) {
+//     console.error("[GET /flights/fullsearch] Error:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+const parsePassengerString = (ps) => {
+  const [adults, children, infants] = ps.split(".").map(Number);
+  return { adults, children, infants };
 };
 
 exports.fullSearchHandler = async (req, res) => {
-  const { from, to, departureDate, returnDate, passengers, seat_class } =
-    req.fullsearch;
+  const { ap, dt, ps, sc } = req.query;
 
   try {
-    const seatKey = `seat.${seat_class.toLowerCase()}`;
+    const [from, to] = ap.split(".");
+    const [departureDate, returnDateRaw] = dt.split(".");
+    const passengers = parsePassengerString(ps);
+    const seat_class = sc || "ECONOMY";
 
-    const outbound = await Flight.find({
-      iata_from: from,
-      iata_to: to,
-      departure_date: departureDate,
-      [seatKey]: { $gt: 0 },
-      deleted: false,
-    }).sort({ departure_time: 1 });
+    const searchParams = {
+      originLocationCode: from,
+      destinationLocationCode: to,
+      departureDate: formatDate(departureDate),
+      adults: String(passengers.adults || 1),
+      children: String(passengers.children || 0),
+      infants: String(passengers.infants || 0),
+      travelClass: seat_class,
+      currencyCode: "VND",
+      max: 10,
+    };
 
-    const outboundWithPrice = outbound.map((f) => ({
-      ...f._doc,
-      total_price: calculateTotalPrice(f.price, passengers),
-    }));
+    const departureSearch = await amadeus.shopping.flightOffersSearch.get(
+      searchParams
+    );
 
-    let inboundWithPrice = [];
-    if (returnDate) {
-      const inbound = await Flight.find({
-        iata_from: to,
-        iata_to: from,
-        departure_date: returnDate,
-        [seatKey]: { $gt: 0 },
-        deleted: false,
-      }).sort({ departure_time: 1 });
-
-      inboundWithPrice = inbound.map((f) => ({
-        ...f._doc,
-        total_price: calculateTotalPrice(f.price, passengers),
-      }));
+    let returnSearch = null;
+    if (returnDateRaw !== "NA") {
+      const returnParams = {
+        originLocationCode: to,
+        destinationLocationCode: from,
+        departureDate: formatDate(returnDateRaw),
+        adults: String(passengers.adults || 1),
+        children: String(passengers.children || 0),
+        infants: String(passengers.infants || 0),
+        travelClass: seat_class,
+        currencyCode: "VND",
+        max: 10,
+      };
+      returnSearch = await amadeus.shopping.flightOffersSearch.get(
+        returnParams
+      );
     }
 
-    res.status(200).json({
-      message: "Full search results",
-      outbound: outboundWithPrice,
-      inbound: inboundWithPrice,
+    return res.status(200).json({
+      message: "Fetched from Amadeus",
+      outbound: departureSearch.data,
+      inbound: returnSearch ? returnSearch.data : [],
     });
   } catch (error) {
-    console.error("[GET /flights/fullsearch] Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error(
+      "[GET /flights/fullsearch] Error:",
+      error.response?.data || error.message
+    );
+    res.status(500).json({
+      message: "Failed to fetch from Amadeus",
+      error: error.response?.data || error.message,
+    });
   }
+};
+
+const formatDate = (dateStr) => {
+  const [day, month, year] = dateStr.split("-");
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
