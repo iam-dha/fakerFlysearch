@@ -19,4 +19,6 @@ const flight_schema = new mongoose.Schema({
   deleted: { type: Boolean, default: false },
 }, {timestamps: true});
 
+flight_schema.index({ flight_number: 1, departure_date: 1 }, { unique: true });
+
 module.exports = mongoose.model("Flight", flight_schema,"flights");

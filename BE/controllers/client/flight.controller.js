@@ -12,12 +12,14 @@ module.exports.searchAndStoreFlights = async (req, res) => {
       adults: "1",
       nonStop: true,
       currencyCode: "VND",
-      max: 5,
+      max: 10,
     });
 
     const results = [];
+    const flightOffers = response.data.slice(0, 3);
+    let saved = 0;
 
-    for (const offer of response.data) {
+    for (const offer of flightOffers) {
       const segment = offer.itineraries[0].segments[0];
 
       const flightData = {
