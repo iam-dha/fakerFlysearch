@@ -7,7 +7,7 @@ const { checkAccessToken } = require("../../middlewares/authenticate.middleware"
 
 router.get(
   "/car-routes",
-  validateInput(getAvailableCarsSchema, "query"),
+  validateInput(getAvailableCarsSchema),
   controller.getAvailableCars
 );
 
