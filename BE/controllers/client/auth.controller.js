@@ -93,12 +93,10 @@ module.exports.registerOTP = async (req, res) => {
 
     // OTP in range 100000 - 999999
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
     //Save OTP and limit into redis
     await redisClient.setEx(otpKey, systemConfig.otpExpiration * 60, otp);
     await redisClient.setEx(resendKey, systemConfig.otpResendLimit * 60, "1");
-
-    otpSender(email, otp)
+    await otpSender(email, otp)
         .then(() => {
             console.log(`Otp: ${otp} sent to ${email}`);
         })
@@ -154,15 +152,9 @@ module.exports.registerVerify = async (req, res) => {
         address: address || "",
         phone: phone || "",
         userId: newUser._id,
+        coins: 0
     });
     await newUserInfo.save();
-    const defaultFolder = new Folder({
-        name: "Favourites",
-        description: "This is your favourite folder",
-        userId: newUser._id,
-        isDefault: true,
-    });
-    await defaultFolder.save();
     await redisClient.del(`otp:verified:${email}`);
     const accessToken = tokenGenerate.generateAccessToken(newUser);
     const refreshToken = tokenGenerate.generateRefreshToken(newUser);

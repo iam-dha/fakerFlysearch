@@ -6,6 +6,8 @@ const roleRoute = require("./role.routes");
 const promotionRoute = require("./promotion.routes");
 const flightRoute = require("./flight.routes");
 const hotelRoute = require("./hotel.routes");
+const busRoute = require("./busRoute.routes");
+const busCompanyRoute = require("./busCompany.routes");
 
 const bookingRoute = require("./booking.routes");
 module.exports = (app) => {
@@ -17,5 +19,7 @@ module.exports = (app) => {
     app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/hotels`, hotelRoute);
     app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/bookings`, bookingRoute);
     app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/roles`, roleRoute);
+    app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/bus-companies`, busCompanyRoute);
+    app.use(`${systemConfig.apiPath}/v1/${systemConfig.prefixAdmin}/bus-routes`, busRoute);
     
 }

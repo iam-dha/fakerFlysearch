@@ -6,63 +6,62 @@ const {
     fullNameField,
     addressField,
     phoneField,
-    tokenField
+    tokenField,
 } = require("../sharedFields.schema");
 // Joi Schema
-const loginSchema = joi.object({
+const validateLogin = {
+  body: joi.object({
+    email: joi.string().email().required(),
+    password: passwordField
+})};
+
+const emailSchema = {
     body: joi.object({
         email: emailField,
-        password: passwordField,
     }),
-});
+};
 
-const emailSchema = joi.object({
-    body: joi.object({
-        email: emailField,
-    }),
-});
-
-const registerOtpVerifySchema = joi.object({
+const registerOtpVerifySchema = {
     body: joi.object({
         email: emailField,
         otp: otpField,
     }),
-});
+};
 
-const registerVerifySchema = joi.object({
+const registerVerifySchema = {
     body: joi.object({
         email: emailField,
         password: passwordField,
         token: tokenField,
         fullName: fullNameField,
         address: addressField,
-        phone: phoneField
+        phone: phoneField,
     }),
-});
+};
 
-const changePassSchema = joi.object({
+const changePassSchema = {
     body: joi.object({
         password: passwordField,
         newPassword: passwordField,
-        reNewPassword: joi.ref('newPassword')
-    })
-});
+        reNewPassword: joi.ref("newPassword"),
+    }),
+};
 
-const newPassSchema = joi.object({
+const newPassSchema = {
     body: joi.object({
         newPassword: passwordField,
-        reNewPassword: joi.ref('newPassword')
+        reNewPassword: joi.ref("newPassword"),
     }),
     params: joi.object({
-        token: joi.string().length(16).required(), //trong sharedFields để là 16 mà 
-    })
-})
+        token: joi.string().length(16).required(), //trong sharedFields để là 16 mà
+    }),
+};
 
 module.exports = {
-    loginSchema,
+    validateLogin,
     emailSchema,
     registerVerifySchema,
     changePassSchema,
     newPassSchema,
-    registerOtpVerifySchema
+    registerOtpVerifySchema,
 };

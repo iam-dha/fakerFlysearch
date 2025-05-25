@@ -17,6 +17,10 @@ const userInformation_schema = new mongoose.Schema(
             ref: "User",
             required: true
         },
+        coins : {
+            type: Number,
+            default: 0
+        },
         address: String,
         phone: {
             type: String,

@@ -1,24 +1,29 @@
-const BusCompany = require("../../models/busCompany.model");
+const {BusCompany} = require("../../models/busCompany.model");
 
+// [GET] /api/v1/admin/bus-companies
 exports.getAll = async (req, res) => {
   try {
     const companies = await BusCompany.find({ deleted: false });
-    res.status(200).json({ message: "OK", data: companies });
+    res.status(200).json({ message: "Get Bus Company successfully", data: companies });
   } catch (err) {
+    console.err("[GET /api/v1/admin/bus-companies] Error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// [POST] /api/v1/admin/bus-companies
 exports.create = async (req, res) => {
   try {
     const newCompany = new BusCompany(req.body);
     await newCompany.save();
-    res.status(201).json({ message: "Created", data: newCompany });
+    res.status(201).json({ message: "Created Bus Company successfullt", data: newCompany });
   } catch (err) {
+    console.error("[POST /api/v1/admin/bus-companies] Error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// [GET] /api/v1/admin/bus-companies/:id
 exports.getById = async (req, res) => {
   try {
     const company = await BusCompany.findById(req.params.id);
@@ -26,10 +31,12 @@ exports.getById = async (req, res) => {
       return res.status(404).json({ message: "Not found" });
     res.status(200).json({ message: "OK", data: company });
   } catch (err) {
+    console.error("[GET /api/v1/admin/bus-companies/:id] Error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// [PATCH] /api/v1/admin/bus-companies/:id
 exports.update = async (req, res) => {
   try {
     const updated = await BusCompany.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -41,6 +48,7 @@ exports.update = async (req, res) => {
   }
 };
 
+// [DELETE] /api/v1/admin/bus-companies/:id
 exports.softDelete = async (req, res) => {
   try {
     const company = await BusCompany.findById(req.params.id);
