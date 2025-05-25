@@ -24,7 +24,3 @@ exports.createBookingValidator = {
     ).optional()
   })
 };
-
-module.exports = {
-  createBookingValidator
-};
