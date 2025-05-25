@@ -10,14 +10,14 @@ const { parseFullsearchParams } = require("../../middlewares/parseFullsearch.mid
 router.get(
   "/search",
   validateInput(searchFlightSchema, "query"),
-  authMiddleWare.checkAccessToken(),
+  //authMiddleWare.checkAccessToken(),
   controller.searchAndStoreFlights
 ); // /api/v1/flights/search?from=SGN&to=HAN&date=2024-06-02
 
 router.post(
   "/confirm-price",
   validateInput(confirmPriceSchema),
-  authMiddleWare.checkAccessToken(),
+  //authMiddleWare.checkAccessToken(),
   controller.confirmFlightPrice
 );  // /api/v1/flights/confirm-price
 
@@ -25,7 +25,7 @@ router.post(
 router.get(
   "/fullsearch",
   validateInput(fullsearchQuerySchema, "query"),
-  authMiddleWare.checkAccessToken(),
+  //authMiddleWare.checkAccessToken(),
   parseFullsearchParams,
   controller.fullSearchHandler
 );

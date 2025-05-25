@@ -38,5 +38,7 @@ router.get("/hotels/:hotelId/rooms",
    controller.getRoomsByHotelId);
 // /api/v1/hotels/664f29d1a914e95e7d10c5be/rooms?type=deluxe&page=2&limit=5
 
+router.get("/iata/:iata", controller.getHotelsByIata);
+
 
 module.exports = router;
