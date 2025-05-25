@@ -32,6 +32,14 @@ router.get(
   controller.getHotelList
 );
 
+router.get(
+  "/:hotelId",
+  checkAccessToken("User"),
+  validateInput(getHotelListSchema, "query"),
+  controller.getHotelById
+);
+
+
 router.get("/hotels/:hotelId/rooms",
   checkAccessToken("User"),
   validateInput(getRoomsByHotelIdSchema, "query"),
