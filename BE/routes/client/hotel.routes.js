@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../../controllers/client/hotel.controller");
 const { validateInput } = require("../../middlewares/validate.middleware");
-const { checkAccessToken } = require("../../middlewares/authenticate.middleware");
+const {
+  checkAccessToken,
+} = require("../../middlewares/authenticate.middleware");
 const {
   bookHotelSchema,
   getRoomsByIataAndDateSchema,
   getHotelListSchema,
-  getRoomsByHotelIdSchema
+  getRoomsByHotelIdSchema,
 } = require("../../schemas/hotel.schema");
-
 
 router.post(
   "/hotel-bookings",
@@ -17,6 +18,12 @@ router.post(
   validateInput(bookHotelSchema),
   controller.bookMultipleRooms
 );
+
+router.get(
+  "/:hotelId/detail",
+  checkAccessToken("User"),
+  hotelController.getHotelDetails
+); //GET /api/v1/hotels/:hotelId/detail
 
 router.get(
   "/hotel-rooms",
@@ -32,13 +39,14 @@ router.get(
   controller.getHotelList
 );
 
-router.get("/hotels/:hotelId/rooms",
+router.get(
+  "/hotels/:hotelId/rooms",
   checkAccessToken("User"),
   validateInput(getRoomsByHotelIdSchema, "query"),
-   controller.getRoomsByHotelId);
+  controller.getRoomsByHotelId
+);
 // /api/v1/hotels/664f29d1a914e95e7d10c5be/rooms?type=deluxe&page=2&limit=5
 
 router.get("/iata/:iata", controller.getHotelsByIata);
-
 
 module.exports = router;

@@ -60,6 +60,34 @@ exports.bookMultipleRooms = async (req, res) => {
   }
 };
 
+exports.getHotelDetails = async (req, res) => {
+  const { hotelId } = req.params;
+
+  if (!hotelId) {
+    return res.status(400).json({ message: "Missing hotel ID" });
+  }
+
+  try {
+    const hotel = await Hotel.findOne({ _id: hotelId, deleted: false }).lean();
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    const rooms = await Room.find({ hotel: hotelId, deleted: false }).lean();
+
+    return res.status(200).json({
+      message: "Hotel detail fetched successfully",
+      data: {
+        hotel,
+        rooms
+      }
+    });
+  } catch (err) {
+    console.error(`[GET /hotels/${hotelId}/detail] Error:`, err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.getRoomsByIataAndDate = async (req, res) => {
   const { iata, check_in, check_out } = req.query;
   if (!iata || !check_in || !check_out) {
