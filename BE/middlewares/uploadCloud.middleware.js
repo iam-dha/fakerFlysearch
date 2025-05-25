@@ -72,3 +72,40 @@ module.exports.uploadCloudImages = (fieldName = "image") => {
     next();
   };
 };
+
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream((err, result) => {
+      if (err) reject(err);
+      else resolve(result.secure_url);
+    });
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+
+module.exports.uploadRoomImages = async (req, res, next) => {
+  try {
+    const result = {};
+
+    // thumbnail (1 ảnh)
+    if (req.files?.thumbnail?.[0]) {
+      result.thumbnail = await uploadToCloudinary(req.files.thumbnail[0].buffer);
+    }
+
+    // images (nhiều ảnh)
+    if (req.files?.images?.length > 0) {
+      result.images = await Promise.all(
+        req.files.images.map(file => uploadToCloudinary(file.buffer))
+      );
+    }
+
+    // Gán vào req.body để controller sử dụng
+    if (result.thumbnail) req.body.thumbnail = result.thumbnail;
+    if (result.images) req.body.images = result.images;
+
+    next();
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ message: "Image upload failed" });
+  }
+};

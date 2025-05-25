@@ -13,3 +13,4 @@ module.exports = (app) => {
   app.use(`${systemConfig.apiPath}/v1/cars`, carRoute);
   app.use(`${systemConfig.apiPath}/v1/bookings`, bookingRoute);
 };
+
