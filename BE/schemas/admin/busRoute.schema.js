@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-exports.busRouteSchema = {
+busRouteSchema = Joi.object({
   body: Joi.object({
     company: Joi.string().required(),
     from: Joi.string().required(),
@@ -11,7 +11,7 @@ exports.busRouteSchema = {
     type: Joi.string().valid("standard", "fast").required(),
     available_seats: Joi.number().min(0)
   })
-};
+});
 
 module.exports = {
   busRouteSchema
