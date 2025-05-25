@@ -21,11 +21,11 @@ const promotion_schema = new mongoose.Schema({
     },
     startDate: {
         type: Date,
-        default: Date.now,
+        default: new Date(Date.now()),
     },
     endDate: {
         type: Date,
-        default: Date.now + 7 * 24 * 60 * 60 * 1000,
+        default: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     },
     totalSlot: {
         type: Number,

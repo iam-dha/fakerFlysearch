@@ -1,4 +1,4 @@
-const amadeus = require("../config/amadeus");
+const amadeus = require("../../config/amadeus");
 const Flight = require("../../models/flight.model");
 
 module.exports.searchAndStoreFlights = async (req, res) => {
