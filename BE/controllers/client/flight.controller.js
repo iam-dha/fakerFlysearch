@@ -32,10 +32,8 @@ module.exports.searchAndStoreFlights = async (req, res) => {
       };
 
       const exists = await Flight.findOne({
-        iata_from: flightData.iata_from,
-        iata_to: flightData.iata_to,
-        departure_date: flightData.departure_date,
-        departure_time: flightData.departure_time,
+        flight_number,
+        departure_date: flightData.departure_date
       });
 
       if (!exists) {
