@@ -1,7 +1,9 @@
 // Model
+const bcrypt = require("bcryptjs");
 const { userInfo } = require("os");
 const User = require("../../models/user.model");
 const UserInformation = require("../../models/userInformation.model");
+const Role = require("../../models/role.model");
 const Session = require("../../models/session.model");
 const PasswordResetToken = require("../../models/passwordResetToken.model");
 
@@ -68,6 +70,52 @@ module.exports.getUserInfo = async (req, res) => {
         });
     } catch (error) {
         console.error(`[GET /api/v1/admin/users/${userId}] Error:`, error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+//[POST] /api/v1/admin/users
+module.exports.createUser = async (req, res) => {
+    const { email, fullName, address, status, phone, role, password } = req.body;
+    try {
+        const existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+        const role = Role.findOne({
+            title: role,
+        });
+        if (!role) {
+            return res.status(400).json({ message: "Role does not exist" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10); // Ideally, you should hash the password here
+        const newUser = new User({
+            email: email,
+            password: "defaultPassword",
+            role: role._id // Set a default password or handle it differently
+        });
+        await newUser.save();
+        const userInformation = new UserInformation({
+            userId: newUser._id,
+            fullName: fullName,
+            address: address,
+            status: status,
+            phone: phone,
+        });
+        await userInformation.save();
+
+        return res.status(201).json({
+            message: "Create user successfully",
+            data: {
+                userId: newUser._id,
+                email: email,
+                fullName: fullName,
+                address: address,
+                status: status,
+            },
+        });
+    } catch (error) {
+        console.error(`[POST /api/v1/admin/users] Error:`, error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
