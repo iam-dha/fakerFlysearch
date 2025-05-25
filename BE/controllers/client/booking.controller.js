@@ -151,3 +151,61 @@ exports.getBookingById = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// DELETE /api/v1/bookings/:bookingId
+exports.deleteBooking = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.userId;
+
+  try {
+    const booking = await Booking.findOne({ _id: bookingId, user: userId });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    if (booking.payment_status === "paid") {
+      return res.status(400).json({ message: "Cannot cancel a paid booking" });
+    }
+
+    const flight = await Flight.findById(booking.flight);
+    const seatKey = booking.seat_class.toLowerCase();
+    flight.seat[seatKey] += booking.passengers.length;
+    await flight.save();
+
+    booking.deleted = true;
+    await booking.save();
+
+    res.status(200).json({ message: "Booking cancelled and seat restored" });
+  } catch (error) {
+    console.error("[DELETE /bookings/:id] Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// POST /api/v1/bookings/pay-all
+exports.payAllUserBookings = async (req, res) => {
+  const userId = req.userId;
+  const email = req.email;
+
+  try {
+    const bookings = await Booking.find({ user: userId, payment_status: "pending", deleted: false }).populate("flight");
+
+    if (bookings.length === 0) {
+      return res.status(200).json({ message: "No pending bookings to pay", count: 0 });
+    }
+
+    for (const booking of bookings) {
+      booking.payment_status = "paid";
+      await booking.save();
+      await mailer.sendBookingConfirmation(email, booking);
+    }
+
+    res.status(200).json({
+      message: "All bookings paid successfully",
+      count: bookings.length,
+      bookings
+    });
+  } catch (error) {
+    console.error("[POST /bookings/pay-all] Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
