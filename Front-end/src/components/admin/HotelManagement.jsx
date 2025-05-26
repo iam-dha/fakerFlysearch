@@ -17,15 +17,14 @@ const HotelManagement = () => {
     phone: "",
     email: "",
     contact_email: "",
-    thumbnail: null, // file object
-    previewThumbnail: "", // preview url
+    thumbnail: null,
+    previewThumbnail: "",
     status: "active",
     _id: "",
   });
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [detailHotel, setDetailHotel] = useState(null);
 
-  // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [totalPages, setTotalPages] = useState(1);

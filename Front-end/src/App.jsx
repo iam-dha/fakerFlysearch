@@ -9,7 +9,6 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Thêm route này ở trên cùng */}
         <Route
           path="/"
           element={

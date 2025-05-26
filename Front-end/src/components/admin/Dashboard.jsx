@@ -10,7 +10,7 @@ import Statistics from "./Statistics.jsx";
 import PermissionManagement from "./PermissionManagement";
 import HotelManagement from "./HotelManagement.jsx";
 import BusCompanyManagement from "./BusCompany.jsx";
-import "../../styles/Dashboard.css";
+import "../../styles/Dashboard.admin.css";
 
 const Dashboard = () => {
   const handleLogout = () => {
