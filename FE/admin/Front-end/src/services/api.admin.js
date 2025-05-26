@@ -4,7 +4,7 @@ const getAccessToken = () => localStorage.getItem("accessToken");
 const getRefreshToken = () => localStorage.getItem("refreshToken");
 
 const api = axios.create({
-  baseURL: "http://localhost:9090/api/v1",
+  baseURL: "http://34.207.117.120:9696/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -33,7 +33,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = getRefreshToken();
         const res = await axios.post(
-          "http://localhost:9090/api/v1/client/auth/refresh",
+          "http://34.207.117.120:9696/api/v1/client/auth/refresh",
           { refreshToken }
         );
         const newAccessToken = res.data.accessToken;
