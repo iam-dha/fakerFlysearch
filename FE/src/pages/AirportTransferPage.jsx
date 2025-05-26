@@ -150,7 +150,7 @@ const AirportTransfer = () => {
             </div>
           </>
         ) : (
-          <ResultSearchVehicle />
+          <ResultSearchVehicle formData={formData} />
         )}
       </div>
       <Footer />

@@ -5,7 +5,9 @@ import Cookies from "js-cookie";
 import Loading from "../components/Loading";
 import Alert from "../components/Alert";
 import { requestOtp, verifyRegister, verifySignUp } from "../services/api";
+import { useNavigate } from "react-router-dom";
 export default function SignUp() {
+  const navigate = useNavigate();
   const [auth, setAuth] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingOTP, setIsLoadingOTP] = useState(false);
@@ -180,7 +182,7 @@ export default function SignUp() {
       setCheckSignUp(true);
       const results = await verifySignUp(formDone);
       Cookies.set("accessToken", results?.data?.accessToken, { expires: 7 });
-      setAuth(4);
+      navigate(`/home`);
     }
   };
   return (
@@ -305,7 +307,7 @@ export default function SignUp() {
           )}
           {auth == 3 && (
             <div
-              className={styles.container_fill_sign_up}
+              className={styles.container_fill_sign_up1}
               style={{ paddingTop: "20px !important" }}
             >
               <div className={styles.container_back}>

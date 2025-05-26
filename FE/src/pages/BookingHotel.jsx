@@ -2,7 +2,25 @@ import styles from "../styles/booking_hotel.module.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { bookingHotelFinal } from "../services/api";
+import Cookies from "js-cookie";
 export default function BookingHotel() {
+  const location = useLocation();
+  const params = location.state || {};
+  // console.log(params);
+  const [dataCheckIn, setDataCheckIn] = useState({
+    checkinHotel: "",
+    checkoutHotel: "",
+  });
+
+  const formatDate = (dateStr) => {
+    try {
+      return new Date(dateStr).toISOString().split("T")[0];
+    } catch {
+      return "";
+    }
+  };
   const data_hotel = {
     imgHotel: "/images/hotel/booking.png",
     imgRoomHotel: "/images/hotel/roomHotel.png",
@@ -189,6 +207,33 @@ export default function BookingHotel() {
     // Sắp xếp giảm dần
     return getNumericValue(b.discount) - getNumericValue(a.discount);
   });
+  const data = {
+    hotelId: params.hotelId,
+    check_in: dataCheckIn.checkinHotel,
+    check_out: dataCheckIn.checkoutHotel,
+    rooms: [
+      {
+        room: params.roomId,
+        quantity: 1,
+      },
+    ],
+  };
+  const bookingHotel = async () => {
+    const accessToken = Cookies.get("accessToken");
+
+    try {
+      const res = await bookingHotelFinal(accessToken, data);
+
+      // Axios trả dữ liệu ở res.data, không cần .json()
+      const result = res.data;
+
+      alert("✅ Đặt phòng thành công!");
+    } catch (err) {
+      console.error("❌ Lỗi đặt phòng:", err);
+      alert("❌ Đặt phòng thất bại!");
+    }
+  };
+
   // ========Mở dropbox xem chi tiết giá gốc ======
   const [isDropboxOriginalPrice, setIsDropboxOriginalPrice] = useState(false);
   const handleClickDropboxOriginal = () => {
@@ -314,13 +359,31 @@ export default function BookingHotel() {
               <div className={styles.containerCheckHotel}>
                 <div className={styles.checkHotel}>
                   <p className={styles.textCheck}>Nhận phòng:</p>
-                  <p className={styles.textNormal}>{data_hotel.checkinHotel}</p>
+                  <input
+                    type="date"
+                    className={styles.textNormal}
+                    value={data_hotel.checkinHotel}
+                    onChange={(e) =>
+                      setDataCheckIn((prev) => ({
+                        ...prev,
+                        checkinHotel: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
                 <div className={styles.checkHotel}>
                   <p className={styles.textCheck}>Trả phòng:</p>
-                  <p className={styles.textNormal}>
-                    {data_hotel.checkoutHotel}
-                  </p>
+                  <input
+                    type="date"
+                    className={styles.textNormal}
+                    value={data_hotel.checkoutHotel}
+                    onChange={(e) =>
+                      setDataCheckIn((prev) => ({
+                        ...prev,
+                        checkoutHotel: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
                 <div className={styles.checkHotel}>
                   <p className={styles.textCheck}>Số đêm:</p>
@@ -392,15 +455,31 @@ export default function BookingHotel() {
                   <div className={styles.containerCheckHotel}>
                     <div className={styles.checkHotel}>
                       <p className={styles.textCheck}>Nhận phòng:</p>
-                      <p className={styles.textNormal}>
-                        {data_hotel.checkinHotel}
-                      </p>
+                      <input
+                        type="date"
+                        className={styles.textNormal}
+                        value={formatDate(dataCheckIn.checkinHotel)}
+                        onChange={(e) =>
+                          setDataCheckIn((prev) => ({
+                            ...prev,
+                            checkinHotel: e.target.value,
+                          }))
+                        }
+                      />
                     </div>
                     <div className={styles.checkHotel}>
                       <p className={styles.textCheck}>Trả phòng:</p>
-                      <p className={styles.textNormal}>
-                        {data_hotel.checkoutHotel}
-                      </p>
+                      <input
+                        type="date"
+                        className={styles.textNormal}
+                        value={formatDate(dataCheckIn.checkoutHotel)}
+                        onChange={(e) =>
+                          setDataCheckIn((prev) => ({
+                            ...prev,
+                            checkoutHotel: e.target.value,
+                          }))
+                        }
+                      />
                     </div>
                     <div className={styles.checkHotel}>
                       <p className={styles.textCheck}>Số đêm:</p>
@@ -772,7 +851,12 @@ export default function BookingHotel() {
                 </p>
                 <div className={styles.containerChecked}>
                   <div className={styles.btnChecked}>
-                    <p className={styles.textChecked}>Xác nhận đặt phòng</p>
+                    <p
+                      className={styles.textChecked}
+                      onClick={() => bookingHotel()}
+                    >
+                      Xác nhận đặt phòng
+                    </p>
                   </div>
                 </div>
               </div>

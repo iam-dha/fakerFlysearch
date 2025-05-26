@@ -4,7 +4,35 @@ import Footer from "../components/Footer";
 import { dataTypeHotel } from "../utils/data";
 import ListNumberHotelOther from "../components/list_number_hotel_other";
 import { useState, useEffect } from "react";
+import { getDetailsHotel } from "../services/api";
+import Cookies from "js-cookie";
+import { useNavigate, useLocation } from "react-router-dom";
 export default function DetailsHotel({ data }) {
+  const location = useLocation();
+  const pathSegments = location.pathname.split("/"); // tách chuỗi theo dấu "/"
+  const hotelId = pathSegments[pathSegments.length - 1];
+  const [hotel, setHotel] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken");
+    const fetchHotelDetails = async () => {
+      try {
+        const res = await getDetailsHotel(hotelId, accessToken); // gọi API với slug
+        if (res.status === 200) {
+          setHotel(res.data.data); // cập nhật thông tin khách sạn
+        } else {
+          setError("Không tìm thấy khách sạn");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Lỗi khi tải thông tin khách sạn");
+      }
+    };
+
+    fetchHotelDetails();
+  }, [hotelId]);
+  // console.log(hotel);
   const hotelType = dataTypeHotel.find(
     (type) => type.id === data?.hotel?.hotelType
   );
@@ -145,8 +173,7 @@ export default function DetailsHotel({ data }) {
                 {/* Title and review */}
                 <div className={styles.container_title_review_hotel}>
                   <p className={styles.text_title_hotel}>
-                    {data?.hotel?.hotelName ||
-                      "The Shells Resort & Spa Phú Quốc"}
+                    {hotel?.name || "The Shells Resort & Spa Phú Quốc"}
                   </p>
                   <div className={styles.content_details_hotel}>
                     <div className={styles.review_hotel}>
@@ -185,7 +212,7 @@ export default function DetailsHotel({ data }) {
                           alt="img"
                           className={styles.imgIcon}
                         />
-                        <p>64, Trần Hưng Đạo, Phú Quốc, Kiên Giang</p>
+                        <p>{hotel?.address}</p>
                       </div>
                     </div>
                   </div>
@@ -196,13 +223,7 @@ export default function DetailsHotel({ data }) {
                     <p className={styles.textTitleIntroduce}>Giới thiệu</p>
                   </div>
                   <p className={styles.text_introduce_hotel}>
-                    Đỗ xe và Wi-Fi luôn miễn phí, vì vậy quý khách có thể giữ
-                    liên lạc, đến và đi tùy ý. Nằm ở vị trí trung tâm tại Hải
-                    Châu của Đà Nẵng, chỗ nghỉ này đặt quý khách ở gần các điểm
-                    thu hút và tùy chọn ăn uống thú vị. Đừng rời đi trước khi
-                    ghé thăm The Marble Mountains nổi tiếng. Được xếp hạng 5
-                    sao, chỗ nghỉ chất lượng cao này cho phép khách nghỉ sử dụng
-                    mát-xa, xông khô và bồn tắm nước nóng ngay trong khuôn viên.
+                    {hotel?.description}
                   </p>
                 </div>
               </div>
@@ -587,7 +608,7 @@ export default function DetailsHotel({ data }) {
             </div>
           </div>
         </div>
-        <ListNumberHotelOther sortedRooms={sortedRooms} />
+        <ListNumberHotelOther sortedRooms={sortedRooms} hotel={hotel} />
       </div>
       <Footer />
     </>

@@ -52,12 +52,57 @@ export const searchFly = (params, token) => {
 };
 // Lấy cài đặt người dùng (token cần được đính kèm)
 export const getUserSettings = (token) => {
-  return api.get("/user/settings", {
+  return api.get("/client/user/settings", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
+// Lấy cài đặt người dùng (token cần được đính kèm)
+export const getBookingHistory = (token) => {
+  return api.get("/client/bookings/history", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const payAllBooking = (token) => {
+  return api.post(
+    "/client/bookings/pay-all",
+    {}, // body để trống (hoặc thêm data nếu có)
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+export const updateUserSettings = (token, data) => {
+  return api.patch("/client/user/settings", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const getDetailsHotel = (id, token) => {
+  return api.get(`/client/hotels/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const bookingHotelFinal = (token, params) => {
+  return api.post(
+    `/client/hotels/hotel-bookings`,
+    params, // Đây là phần body (data gửi đi)
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 // =========Máy bay ===================
 export const bookingFly = (token, params) => {
   return api.post("/client/bookings", params, {
@@ -86,6 +131,14 @@ export const getHotel = (token) => {
 };
 export const searchHotel = (token, key) => {
   return api.get(`/client/hotels/iata/${key}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+// ========== promotion ======================
+export const getPromotion = (token) => {
+  return api.get(`/client/promotions`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 import "../styles/UserProfilePage.css";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../services/api";
+import { getUser, updateUserSettings } from "../services/api";
 const UserProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
@@ -55,8 +55,14 @@ const UserProfilePage = () => {
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
-
-  const handleSave = () => {
+  const data = {
+    name: profile.name,
+    phone: profile.phone,
+    address: profile.address,
+  };
+  const handleSave = async () => {
+    const accessToken = Cookies.get("accessToken");
+    const result = await updateUserSettings(accessToken, data);
     setIsEditing(false);
     alert("Thông tin đã được cập nhật!");
   };
@@ -160,6 +166,7 @@ const UserProfilePage = () => {
                       value={profile.email}
                       onChange={handleChange}
                       placeholder="Email"
+                      disabled
                     />
                     <input
                       type="text"

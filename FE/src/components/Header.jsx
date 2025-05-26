@@ -1,13 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/HomePage.css";
 import { Link } from "react-router-dom";
+import { getUserSettings } from "../services/api";
+import Cookies from "js-cookie";
 const Header = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-
+  const [name, setName] = useState("");
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+  const accessToken = Cookies.get("accessToken");
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await getUserSettings(accessToken);
+        setName(res.data.fullName);
+        // console.log(res);
+      } catch (err) {
+        console.error("Lỗi khi lấy user settings:", err);
+      }
+    };
 
+    fetchSettings();
+  }, []);
   return (
     <header className="homepage-header">
       <h1 className="logo_home">TravelFly ✈️</h1>
@@ -25,7 +40,7 @@ const Header = () => {
           className="avatar-image"
         />
         <div className="container_point_name">
-          <p className="text_name_ava">TuanAnhChu</p>
+          <p className="text_name_ava">{name}</p>
           <div className="height_ava"></div>
           <img src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v3/c/c00ab1f427ddf2519a3e080d9d9c1436.svg" />
           <p className="text_point_ava">318 Điểm</p>
