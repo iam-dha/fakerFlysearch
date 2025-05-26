@@ -62,7 +62,7 @@ adminRoute(app);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
-    console.log("Backend has been deployed!!");
+    console.log("Backend has been deployed!!!");
   })
 
 // Chạy mỗi 10 phút
