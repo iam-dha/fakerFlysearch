@@ -5,8 +5,11 @@ import "../styles/HotelPage.css";
 import HotelSearchBar from "../components/SearchHotel";
 import { getHotel } from "../services/api";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 const HotelPage = () => {
+  const navigate = useNavigate();
   const [hotels, setHotels] = useState([]);
+  const [hotelId, setHotelId] = useState("");
   useEffect(() => {
     const fetchHotel = async () => {
       try {
@@ -59,7 +62,9 @@ const HotelPage = () => {
     ];
     setHotels(defaultHotels);
   }, []);
-
+  const handleBooking = (index) => {
+    navigate(`/details-hotel/${hotels[index]._id}`);
+  };
   return (
     <>
       <Header />
@@ -77,7 +82,7 @@ const HotelPage = () => {
               <div className="hotel-info">
                 <h3>{hotel.name}</h3>
                 <p>{hotel.address}</p>
-                <button>Đặt phòng</button>
+                <button onClick={() => handleBooking(index)}>Đặt phòng</button>
               </div>
             </div>
           ))}

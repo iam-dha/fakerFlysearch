@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "../styles/TransactionHistory.css";
-
+import { getBookingHistory, payAllBooking } from "../services/api";
+import Cookies from "js-cookie";
 const transactions = [
   {
     id: 1,
@@ -40,6 +41,25 @@ const transactions = [
 ];
 
 export default function TransactionHistory() {
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true); // Hiển thị loading nếu cần
+  const [error, setError] = useState(null);
+  const accessToken = Cookies.get("accessToken");
+  useEffect(() => {
+    const fetchBookingHistory = async () => {
+      try {
+        const response = await getBookingHistory(accessToken); // Gọi API
+        setHistory(response.data); // Lưu dữ liệu vào state
+      } catch (err) {
+        setError("Không thể tải lịch sử đặt chỗ");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookingHistory();
+  }, [history]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -61,105 +81,244 @@ export default function TransactionHistory() {
     doc.text(`Phương thức: ${txn.method}`, 10, 70);
     doc.save(`HoaDon_${txn.code}.pdf`);
   };
+  // console.log(history);
+  const [showPopup, setShowPopup] = useState(false);
 
+  const handlePaymentSubmit = (e) => {
+    e.preventDefault();
+    alert("Thanh toán thành công!");
+    setShowPopup(false);
+  };
+  const handlePayAll = async () => {
+    const result = await payAllBooking(accessToken);
+  };
   return (
     <div className="transaction-history-container">
       <div className="header">
         <button className="back-button" onClick={() => navigate("/home")}>
           ⬅ Quay lại
         </button>
+        <button className="back-button" onClick={() => setShowPopup(true)}>
+          Thanh toán tất cả
+        </button>
+
+        {showPopup && (
+          <div className="payment-overlay" onClick={() => setShowPopup(false)}>
+            <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Thanh toán</h2>
+              <form onSubmit={handlePaymentSubmit}>
+                <label>
+                  Tên chủ thẻ
+                  <input type="text" placeholder="Nguyễn Văn A" required />
+                </label>
+                <label>
+                  Số thẻ
+                  <input
+                    type="text"
+                    placeholder="1234 5678 9012 3456"
+                    required
+                  />
+                </label>
+                <div className="row">
+                  <label>
+                    Ngày hết hạn
+                    <input type="text" placeholder="MM/YY" required />
+                  </label>
+                  <label>
+                    CVV
+                    <input type="text" placeholder="123" required />
+                  </label>
+                </div>
+                <div className="payment-buttons">
+                  <button
+                    type="submit"
+                    className="btn-pay"
+                    onClick={handlePayAll}
+                  >
+                    Thanh toán
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => setShowPopup(false)}
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* CSS */}
+        <style jsx>{`
+          .back-button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+          }
+          .back-button:hover {
+            background-color: #0056b3;
+          }
+
+          .payment-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+          }
+
+          .payment-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            width: 420px;
+            max-width: 90vw;
+            animation: fadeInUp 0.4s ease forwards;
+          }
+
+          .payment-modal h2 {
+            margin-bottom: 24px;
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+          }
+
+          form label {
+            display: block;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: #444;
+          }
+
+          form input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 6px;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+          }
+
+          form input:focus {
+            border-color: #007bff;
+            outline: none;
+          }
+
+          .row {
+            display: flex;
+            gap: 12px;
+          }
+
+          .row label {
+            flex: 1;
+          }
+
+          .payment-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+          }
+
+          .btn-pay {
+            flex: 1;
+            margin-right: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+          }
+
+          .btn-pay:hover {
+            background-color: #218838;
+          }
+
+          .btn-cancel {
+            flex: 1;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+          }
+
+          .btn-cancel:hover {
+            background-color: #c82333;
+          }
+
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
         <h2>Lịch sử giao dịch</h2>
       </div>
-
-      <input
-        type="text"
-        className="search-input"
-        placeholder="Tìm kiếm theo mã giao dịch hoặc địa điểm..."
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-
-      {filteredTransactions.map((txn) => (
+      {history?.bookings?.map((txn) => (
         <div
-          key={txn.id}
+          key={txn._id}
           className="transaction-card"
           onClick={() => setSelectedTransaction(txn)}
         >
           <div className="transaction-top">
-            <div className="icon">{txn.icon}</div>
+            <div className="icon">✈️</div>
             <div className="info">
-              <div className="type">{txn.type}</div>
-              <div className="location">{txn.location}</div>
+              <div className="type">Đặt hàng vé máy bay</div>
+              <div className="location">
+                ({txn.flight.iata_from}){"->"}({txn.flight.iata_to})
+              </div>
               <div className="date">{txn.date}</div>
             </div>
             <div
-              className={`amount ${txn.amount < 0 ? "negative" : "positive"}`}
+              className={`amount ${
+                txn.flight.price < 0 ? "negative" : "positive"
+              }`}
             >
-              {txn.amount.toLocaleString("vi-VN")} đ
+              {txn?.flight?.price?.toLocaleString("vi-VN")} đ
             </div>
           </div>
 
           <div className="transaction-bottom">
-            <div className="code">Mã: {txn.code}</div>
-            <div className="method">Phương thức: {txn.method}</div>
+            <div className="code">Mã: {txn.flight.flight_number}</div>
+            <div className="method">Phương thức: bên thứ ba</div>
             <div
               className={`status ${
-                txn.status === "Thành công"
+                txn.payment_status == "paid"
                   ? "success"
-                  : txn.status === "Đã hoàn tiền"
+                  : txn.payment_status == "cancelled"
                   ? "refund"
                   : "pending"
               }`}
             >
-              {txn.status}
+              {txn.payment_status}
             </div>
           </div>
         </div>
       ))}
-
-      {selectedTransaction && (
-        <div
-          className="modal-overlay"
-          onClick={() => setSelectedTransaction(null)}
-        >
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Chi tiết giao dịch</h3>
-            <p>
-              <strong>Mã:</strong> {selectedTransaction.code}
-            </p>
-            <p>
-              <strong>Loại:</strong> {selectedTransaction.type}
-            </p>
-            <p>
-              <strong>Ngày:</strong> {selectedTransaction.date}
-            </p>
-            <p>
-              <strong>Địa điểm:</strong> {selectedTransaction.location}
-            </p>
-            <p>
-              <strong>Phương thức:</strong> {selectedTransaction.method}
-            </p>
-            <p>
-              <strong>Số tiền:</strong>{" "}
-              {selectedTransaction.amount.toLocaleString("vi-VN")} đ
-            </p>
-            <p>
-              <strong>Trạng thái:</strong> {selectedTransaction.status}
-            </p>
-            <button
-              className="download-btn"
-              onClick={() => handleDownload(selectedTransaction)}
-            >
-              📄 Tải hóa đơn PDF
-            </button>
-            <button
-              className="close-btn"
-              onClick={() => setSelectedTransaction(null)}
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

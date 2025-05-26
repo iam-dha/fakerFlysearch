@@ -5,9 +5,23 @@ import {
   data_amenities_room,
   data_RoomCategory,
 } from "../utils/data";
-export default function ListNumberHotelOther({ sortedRooms }) {
+import { useNavigate } from "react-router-dom";
+export default function ListNumberHotelOther({ sortedRooms, hotel }) {
   const [expandedRooms, setExpandedRooms] = useState({});
-
+  const totalAvailableRooms = hotel?.rooms?.reduce(
+    (sum, room) => sum + (room.available_rooms || 0),
+    0
+  );
+  const navigate = useNavigate();
+  const handleBooking = (roomId) => {
+    navigate(`/hotel/payment`, {
+      state: {
+        hotelId: hotel._id,
+        roomId: roomId, // hoặc item._id nếu đang map list
+        // thêm thông tin khác nếu cần
+      },
+    });
+  };
   // Hàm toggle để thay đổi trạng thái hiển thị
   const toggleExpanded = (roomId) => {
     setExpandedRooms((prevState) => ({
@@ -15,6 +29,7 @@ export default function ListNumberHotelOther({ sortedRooms }) {
       [roomId]: !prevState[roomId],
     }));
   };
+  console.log(hotel);
   return (
     <>
       <div className={styles.container}>
@@ -22,14 +37,14 @@ export default function ListNumberHotelOther({ sortedRooms }) {
         <div className={styles.container_Number_room}>
           <p className={styles.textRoom}>Phòng</p>
           <p className={styles.textTotalTypRoom}>
-            Có tổng cộng {data_RoomCategory.length || 0} loại phòng và có{" "}
-            {sortedRooms?.length || 0} lựa chọn
+            Có tổng cộng {totalAvailableRooms || 0} loại phòng và có{" "}
+            {hotel?.rooms?.length || 0} lựa chọn
           </p>
         </div>
         {/* list phòng */}
         <div className={styles.container_list_room_hotel}>
-          {Array.isArray(sortedRooms) && sortedRooms.length > 0 ? (
-            sortedRooms.map((item, index) => {
+          {Array.isArray(hotel?.rooms) ? (
+            hotel?.rooms?.map((item, index) => {
               // Kết hợp tất cả các tiện nghi trong một mảng
               const allAmenities = [
                 ...(item?.room?.bathroomAmenities || []),
@@ -64,13 +79,13 @@ export default function ListNumberHotelOther({ sortedRooms }) {
                   >
                     <div className={styles.container_img_number_room}>
                       <img
-                        src={"/images/hotel/listhotel1.png"}
+                        src={item?.thumbnail}
                         alt="img"
                         className={styles.imgItemHotel}
                       />
                       <div className={styles.container_number_room}>
                         <p className={styles.text_number_room_available}>
-                          Còn {item?.room?.roomCount || 0} phòng trống
+                          Còn {item?.available_rooms || 0} phòng trống
                         </p>
                       </div>
                     </div>
@@ -78,18 +93,20 @@ export default function ListNumberHotelOther({ sortedRooms }) {
                     <div className={styles.container_detail_Hotel}>
                       <div className={styles.container_detail_item}>
                         <p className={styles.text_typeroom}>
-                          {item?.room?.roomName || "Chưa có tên"}
+                          {item?.type || "Chưa có tên"}
                         </p>
                         {/* Giá */}
                         <div className={styles.container_price_hotel}>
                           <p className={styles.textFrom}>Từ</p>
-                          <p className={styles.textPrice}>0 đ / đêm</p>
+                          <p className={styles.textPrice}>
+                            {item?.price?.toLocaleString("vi-VN")} đ / đêm
+                          </p>
                         </div>
                         {/* Sức chứa tối đa */}
                         <div className={styles.container_contain_max_person}>
                           <p className={styles.textNormal}>Sức chứa tối đa:</p>
                           <p className={styles.textMaxPerson}>
-                            {item?.room?.maxAdults || 0} người
+                            {item?.max_guests || 0} người
                           </p>
                           <img
                             src="/images/hotel/info-circle.svg"
@@ -101,13 +118,13 @@ export default function ListNumberHotelOther({ sortedRooms }) {
                         <div className={styles.container_contain_max_person}>
                           <p className={styles.textNormal}>Diện tích:</p>
                           <p className={styles.textMaxPerson}>
-                            {item?.room?.area || 0} m2
+                            {item?.room?.area || 30} m2
                           </p>
                         </div>
                         {/* Hướng */}
                         <div className={styles.container_contain_max_person}>
                           <p className={styles.textNormal}>Hướng:</p>
-                          <p className={styles.textMaxPerson}>Không có hướng</p>
+                          <p className={styles.textMaxPerson}>Hướng Nam</p>
                         </div>
                         {/* Tiện ích phòng */}
                         <div className={styles.container_utility_hotel}>
@@ -146,7 +163,10 @@ export default function ListNumberHotelOther({ sortedRooms }) {
                           </p>
                         </div>
                         <div className={styles.btnDatNgayWrapper}>
-                          <button className={styles.btnDatNgay}>
+                          <button
+                            className={styles.btnDatNgay}
+                            onClick={() => handleBooking(item?._id)}
+                          >
                             Đặt ngay
                           </button>
                         </div>
