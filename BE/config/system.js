@@ -1,7 +1,7 @@
 const ADMIN_PATH = "admin";
 const API_PATH = "/api";
 const REFRESH_TOKEN_EXPIRATION = 7; // days
-const ACCESS_TOKEN_EXPIRATION = 15; // minutes
+const ACCESS_TOKEN_EXPIRATION = 60; // minutes
 const MAX_SESSIONS = 3;
 const OTP_EXPIRATION = 5; // minutes
 const OTP_VERIFIED_EXPIRATION = 5; // minutes

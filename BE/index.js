@@ -65,6 +65,6 @@ app.listen(port, () => {
   })
 
 // Chạy mỗi 10 phút
-  cron.schedule("*/10 * * * *", () => {
+  cron.schedule("*/60 * * * *", () => {
   releaseExpiredBookings();
 });
