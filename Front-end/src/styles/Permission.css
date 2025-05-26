@@ -1,0 +1,128 @@
+/* Permission.css */
+/*.permission-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.permission-container h2 {
+  margin-bottom: 20px;
+}
+
+.add-role {
+  margin-bottom: 20px;
+}
+
+.add-role input {
+  padding: 8px;
+  width: 250px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-role button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 10px;
+}
+
+th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+/* Chỉ in đậm cột group (cột đầu tiên) */
+/*td:first-child {
+  text-align: left;
+  font-weight: bold;
+  background-color: #f9f9f9;
+}
+
+
+td:nth-child(2) {
+  font-weight: normal;
+  background-color: #fff;
+}
+
+.group-end {
+  background-color: #f1f1f1;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
+.update-btn {
+  float: right;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+td.action-cell {
+  font-weight: bold;
+  text-align: left;
+  padding-left: 32px;
+  background: #fff;
+}
+*/
+.permission-container {
+  padding: 24px;
+  max-width: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+.add-role input {
+  padding: 8px;
+  margin-right: 10px;
+}
+
+.add-role button {
+  padding: 8px 12px;
+  font-weight: bold;
+}
+
+.update-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+.checked-bold {
+  accent-color: green;
+}
