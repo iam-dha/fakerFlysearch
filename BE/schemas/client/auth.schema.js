@@ -32,7 +32,6 @@ const registerVerifySchema = {
     body: joi.object({
         email: emailField,
         password: passwordField,
-        token: tokenField,
         fullName: fullNameField,
         address: addressField,
         phone: phoneField,
