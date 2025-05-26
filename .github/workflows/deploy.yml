@@ -1,0 +1,28 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main  # hoặc branch bạn muốn trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          cd /home/ec2-user/fakerFlysearch/BE
+          git pull origin main
+          docker stop fakerfly-be || true
+          docker rm fakerfly-be || true
+          docker build -t fakerfly-be .
+          docker run -d --name fakerfly-be -p 9696:9696 --env-file .env fakerfly-be
