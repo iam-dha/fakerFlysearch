@@ -28,11 +28,6 @@ module.exports.checkAccessToken = (role = "User") => {
                 req.email = decodedToken.email;
                 if (role !== "User") {
                     req.role = decodedToken.role;
-                    if (decodedToken.role !== role) {
-                        return res.status(403).json({
-                            message: `Access denied: ${role} required`,
-                        });
-                    }
                 }
                 return next();
             } else {
