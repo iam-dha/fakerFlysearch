@@ -35,6 +35,7 @@ const registerVerifySchema = {
         fullName: fullNameField,
         address: addressField,
         phone: phoneField,
+        token: joi.string()
     }),
 };
 
